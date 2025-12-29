@@ -35,8 +35,12 @@ a:hover{ text-decoration: underline; }
 
   display: flex;
   flex-direction: column;
-  justify-content: center; /* calm centered pages */
-  gap: 28px;
+
+  /* UPDATED: multi-image pages should start at the top, not be vertically centered */
+  justify-content: flex-start;
+
+  /* OPTIONAL: more breathing room for a 7-image chapter (feel free to set back to 28px) */
+  gap: 52px;
 }
 
 .home{
