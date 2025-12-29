@@ -1,4 +1,4 @@
-```css
+
 :root {
   --text: #111;
   --muted: rgba(17, 17, 17, 0.68);
@@ -101,6 +101,7 @@ a:hover { text-decoration: underline; }
 .meta {
   text-align: center;
   display: grid;
+  justify-items: center;
   gap: 6px;
 }
 
@@ -134,6 +135,15 @@ a:hover { text-decoration: underline; }
   font-size: 14px;
 }
 
+/* Copyright*/
+.copyright {
+  margin-top: 64px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+
 /* Small screens */
 @media (max-width: 520px) {
   :root {
@@ -142,4 +152,3 @@ a:hover { text-decoration: underline; }
     --gap: 44px;
   }
 }
-```
