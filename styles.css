@@ -1,33 +1,39 @@
-:root{
+```css
+:root {
   --text: #111;
-  --muted: rgba(17,17,17,.68);
-  --hair: rgba(17,17,17,.12);
+  --muted: rgba(17, 17, 17, 0.68);
+  --hair: rgba(17, 17, 17, 0.12);
 
-  /* “book page” measure */
+  /* page measure */
   --max: 740px;
   --padY: 72px;
   --padX: 22px;
+
+  /* rhythm */
+  --gap: 52px;
 }
 
-* { box-sizing: border-box; }
+*,
+*::before,
+*::after { box-sizing: border-box; }
 
-body{
+html { -webkit-text-size-adjust: 100%; }
+
+body {
   margin: 0;
   background: #fff;
   color: var(--text);
 
   /* classic serif, book-like */
   font-family: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
-
-  /* normal density */
   font-size: 16px;
   line-height: 1.65;
 }
 
-a{ color: inherit; text-decoration: none; }
-a:hover{ text-decoration: underline; }
+a { color: inherit; text-decoration: none; }
+a:hover { text-decoration: underline; }
 
-.wrap{
+.wrap {
   min-height: 100vh;
   max-width: var(--max);
   margin: 0 auto;
@@ -35,33 +41,31 @@ a:hover{ text-decoration: underline; }
 
   display: flex;
   flex-direction: column;
-
-  /* UPDATED: multi-image pages should start at the top, not be vertically centered */
   justify-content: flex-start;
-
-  /* OPTIONAL: more breathing room for a 7-image chapter (feel free to set back to 28px) */
-  gap: 52px;
+  gap: var(--gap);
 }
 
-.home{
+/* Home */
+.home {
   text-align: center;
   align-items: center;
 }
 
-.site-title{
+.site-title {
   font-size: 18px;
-  letter-spacing: .06em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
-.tagline{
+.tagline {
   margin-top: 10px;
   font-size: 15px;
   color: var(--muted);
   max-width: 52ch;
 }
 
-.archive{
+/* Archive list */
+.archive {
   margin-top: 18px;
   width: 100%;
   max-width: 520px;
@@ -70,7 +74,7 @@ a:hover{ text-decoration: underline; }
   padding-top: 18px;
 }
 
-.archive ul{
+.archive ul {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -78,57 +82,64 @@ a:hover{ text-decoration: underline; }
   gap: 10px;
 }
 
-.archive a{
+.archive a {
   display: flex;
   justify-content: space-between;
   gap: 16px;
 }
 
-.archive .date{
-  letter-spacing: .08em;
+.archive .date {
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   font-size: 13px;
   color: var(--muted);
 }
 
-.archive .place{
-  font-size: 15px;
-}
+.archive .place { font-size: 15px; }
 
-.meta{
+/* Page meta */
+.meta {
   text-align: center;
   display: grid;
   gap: 6px;
 }
 
-.meta .date{
-  letter-spacing: .12em;
+.meta .date {
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   font-size: 12px;
   color: var(--muted);
 }
 
-.meta .place{
-  font-size: 16px;
-}
+.meta .place { font-size: 16px; }
 
-.frame{
+/* Image frames */
+.frame {
   margin: 0;
   display: flex;
   justify-content: center;
 }
 
-.frame img{
+.frame img {
   width: min(920px, 94vw);
   height: auto;
   display: block;
-
-  /* thin border like a print */
   border: 1px solid var(--hair);
 }
 
-.nav{
+/* Footer nav */
+.nav {
   text-align: center;
   color: var(--muted);
   font-size: 14px;
 }
+
+/* Small screens */
+@media (max-width: 520px) {
+  :root {
+    --padY: 56px;
+    --padX: 18px;
+    --gap: 44px;
+  }
+}
+```
