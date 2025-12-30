@@ -142,6 +142,19 @@ a:hover{ text-decoration: underline; }
   font-size: 14px;
 }
 
+.nav a{
+  margin: 0 12px;
+}
+
+.nav .back{
+  color: var(--text);
+}
+
+.nav .home{
+  font-size: 13px;
+  color: var(--muted);
+}
+
 /* Copyright */
 .copyright{
   margin-top: 64px;
