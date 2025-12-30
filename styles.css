@@ -1,8 +1,8 @@
 
 :root {
-  --text: #111;
+  --text: #1a1a1a;
   --muted: rgba(17, 17, 17, 0.68);
-  --hair: rgba(17, 17, 17, 0.12);
+  --hair: rgba(17,17,17,.08);
 
   /* page measure */
   --max: 740px;
@@ -10,7 +10,7 @@
   --padX: 22px;
 
   /* rhythm */
-  --gap: 52px;
+  --gap: 64px;
 }
 
 *,
@@ -28,6 +28,8 @@ body {
   font-family: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
   font-size: 16px;
   line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 a { color: inherit; text-decoration: none; }
@@ -65,11 +67,11 @@ a:hover { text-decoration: underline; }
 }
 
 /* Archive list */
-.archive {
-  margin-top: 18px;
+.archive{
+  margin: 18px auto 0;
   width: 100%;
   max-width: 520px;
-  text-align: left;
+  text-align: center;
   border-top: 1px solid var(--hair);
   padding-top: 18px;
 }
@@ -82,20 +84,11 @@ a:hover { text-decoration: underline; }
   gap: 10px;
 }
 
-.archive a {
+.archive a{
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   gap: 16px;
 }
-
-.archive .date {
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  font-size: 13px;
-  color: var(--muted);
-}
-
-.archive .place { font-size: 15px; }
 
 /* Page meta */
 .meta {
@@ -126,6 +119,7 @@ a:hover { text-decoration: underline; }
   height: auto;
   display: block;
   border: 1px solid var(--hair);
+  background: #fff;
 }
 
 /* Footer nav */
@@ -151,4 +145,15 @@ a:hover { text-decoration: underline; }
     --padX: 18px;
     --gap: 44px;
   }
+}
+
+/* about */
+.about {
+  max-width: 52ch;
+  margin: 0 auto;
+  font-size: 15px;
+  line-height: 1.7;
+}
+.about p {
+  margin: 0 0 1.6em;
 }
