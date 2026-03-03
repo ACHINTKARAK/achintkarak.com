@@ -1,28 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
+  <!-- Home -->
   <url>
     <loc>https://achintkarak.github.io/</loc>
   </url>
 
+  <!-- Month pages -->
   <url>
-    <loc>https://achintkarak.github.io/about/</loc>
+    <loc>https://achintkarak.github.io/journal/2026-02/</loc>
   </url>
-
+  <url>
+    <loc>https://achintkarak.github.io/journal/2026-01/</loc>
+  </url>
   <url>
     <loc>https://achintkarak.github.io/journal/2025-12/</loc>
   </url>
 
+  <!-- Album pages -->
   <url>
-    <loc>https://achintkarak.github.io/journal/2025-12/dingle-ireland/</loc>
+    <loc>https://achintkarak.github.io/journal/2026-02/malta/</loc>
   </url>
-
-  <url>
-    <loc>https://achintkarak.github.io/journal/2026-01/</loc>
-  </url>
-
   <url>
     <loc>https://achintkarak.github.io/journal/2026-01/tenerife-spain/</loc>
+  </url>
+  <url>
+    <loc>https://achintkarak.github.io/journal/2025-12/dingle-ireland/</loc>
   </url>
 
 </urlset>
