@@ -368,12 +368,12 @@ html[data-theme="dark"] .frame img{
 }
 
 /* show menu on hover */
-.settings:hover .menu{
+.settings:hover .menu,
+.settings:focus-within .menu{
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
 }
-
 .menu-item{
   width: 100%;
   text-align: left;
