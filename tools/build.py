@@ -244,7 +244,29 @@ def render_all(root: Path) -> None:
 
     # index.html (home)
     home_t = env.get_template("home.html")
-    write_text(root / "index.html", home_t.render(months=months))
+    
+    latest_albums = list(albums[:3])  # newest-first
+    
+    write_text(
+        root / "index.html",
+        home_t.render(
+            months=months,
+            latest_albums=latest_albums,
+        ),
+    )
+    
+    # newest-first already
+    # hero_album = albums[0] if len(albums) > 0 else None
+    # secondary_albums = albums[1:3] if len(albums) > 1 else []
+    
+    # write_text(
+        # root / "index.html",
+        # home_t.render(
+            # months=months,
+            # hero_album=hero_album,
+            # secondary_albums=secondary_albums,
+        # ),
+    # )
 
     # month pages
     month_t = env.get_template("month.html")

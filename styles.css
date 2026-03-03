@@ -328,3 +328,108 @@ a:hover{ text-decoration: underline; }
   color: var(--text);
   background: var(--card);
 }
+
+/* ---------- Home: Latest albums stack ---------- */
+.latest{
+  text-align: center;
+  max-width: 600px;
+  margin: 40px auto 0 auto;
+  border-top: var(--border);
+  padding-top: 28px;
+  display: grid;
+  gap: 18px;
+}
+
+.latest-stack{
+  display: grid;
+  gap: 14px;
+}
+
+.latest-item{
+  display: inline-block;
+  font-size: 22px;
+  line-height: 1.35;
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.latest-item:hover{
+  text-decoration: underline;
+}
+
+/* ---------- Home: Browse More (Year accordion) ---------- */
+.browse{
+  width: 100%;
+  max-width: 600px;
+  margin: 60px auto 0;
+  border-top: var(--border);
+  padding-top: 22px;
+  text-align: center;
+  display: grid;
+  gap: 16px;
+}
+
+.browse-title{
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Year group */
+.year{
+  display: grid;
+  gap: 10px;
+}
+
+/* Year button (pill) */
+.year-btn{
+  margin: 0 auto;
+  padding: 8px 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--hair);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+
+  font: inherit;
+  font-size: 13px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.year-btn:hover{
+  border-color: var(--text);
+  color: var(--text);
+}
+
+.year-btn[aria-expanded="true"]{
+  border-color: var(--text);
+  color: var(--text);
+}
+
+/* Chevron */
+.chev{
+  font-size: 11px;
+  color: currentColor;
+  transition: transform 0.15s ease;
+}
+
+.year-btn[aria-expanded="true"] .chev{
+  transform: rotate(180deg);
+}
+
+/* Month links (inside open year) */
+.months{
+  display: grid;
+  gap: 10px;
+  padding-top: 6px;
+}
+
+.month-link{
+  display: inline-block;
+  letter-spacing: 0.02em;
+}
