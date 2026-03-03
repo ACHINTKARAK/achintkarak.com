@@ -2,53 +2,111 @@
   /* typography */
   --font: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
 
+  /* type scale */
+  --text: 16px;
+  --text-sm: 13px;
+  --text-xs: 11px;
+  --title: 18px;
+  --h2: 22px;
+
   /* layout */
   --max: 860px;
-  --padY: 76px;
+  --max-narrow: 600px;
+
+  /* spacing scale */
+  --s1: 6px;
+  --s2: 10px;
+  --s3: 14px;
+  --s4: 18px;
+  --s5: 22px;
+  --s6: 28px;
+  --s7: 40px;
+  --s8: 60px;
+  --s9: 76px;
+
+  --padY: var(--s9);
   --padX: 22px;
   --gap: 56px;
 
   /* color (light) */
   --bg: #ffffff;
-  --text: #161616;
+  --ink: #161616;
   --muted: rgba(22, 22, 22, 0.62);
   --hair: rgba(22, 22, 22, 0.10);
   --card: rgba(22, 22, 22, 0.03);
 
   /* UI */
   --radius: 999px;
+  --radius-soft: 14px;
   --border: 1px solid var(--hair);
+
+  /* focus */
+  --focus: 2px solid rgba(22, 22, 22, 0.35);
+  --focus-offset: 3px;
+
+  /* motion */
+  --ease: cubic-bezier(.2,.8,.2,1);
+  --t-fast: 150ms;
+  --t-med: 220ms;
 }
 
-/* Dark theme (manual toggle will set data-theme="dark" on <html>) */
+/* Dark theme (manual toggle sets data-theme="dark" on <html>) */
 html[data-theme="dark"]{
   --bg: #0f0f10;
-  --text: rgba(255,255,255,0.92);
+  --ink: rgba(255,255,255,0.92);
   --muted: rgba(255,255,255,0.62);
   --hair: rgba(255,255,255,0.12);
   --card: rgba(255,255,255,0.06);
+  --focus: 2px solid rgba(255,255,255,0.35);
 }
 
 *,
 *::before,
 *::after{ box-sizing:border-box; }
 
-html{ -webkit-text-size-adjust: 100%; }
+html{
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+}
 
 body{
   margin:0;
   background: var(--bg);
-  color: var(--text);
+  color: var(--ink);
   font-family: var(--font);
-  font-size: 16px;
+  font-size: var(--text);
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-a{ color: inherit; text-decoration: none; }
-a:hover{ text-decoration: underline; }
+/* Better default media behavior */
+img{ max-width: 100%; height: auto; }
 
+/* Links: quieter + more intentional */
+a{
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+  text-decoration-color: var(--hair);
+  transition: text-decoration-color var(--t-fast) var(--ease), opacity var(--t-fast) var(--ease);
+}
+a:hover{
+  text-decoration-color: currentColor;
+}
+a:focus-visible{
+  outline: var(--focus);
+  outline-offset: var(--focus-offset);
+  border-radius: 6px;
+}
+
+/* Selection polish */
+::selection{
+  background: var(--card);
+}
+
+/* Layout */
 .wrap{
   position: relative;
   min-height: 100vh;
@@ -65,17 +123,17 @@ a:hover{ text-decoration: underline; }
   text-align:center;
   display:grid;
   justify-items:center;
-  gap: 8px;
+  gap: var(--s2);
 }
 
 .site-title{
-  font-size: 18px;
+  font-size: var(--title);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .tagline{
-  margin: 8px auto 0;
+  margin: var(--s2) auto 0;
   max-width: 62ch;
   font-size: 15px;
   color: var(--muted);
@@ -92,84 +150,70 @@ a:hover{ text-decoration: underline; }
   font-size: 17px;
 }
 
-
 /* ---------- Breadcrumbs ---------- */
 .crumbs{
   text-align:center;
-  font-size: 13px;
+  font-size: var(--text-sm);
   color: var(--muted);
 }
 .crumbs .sep{
-  margin: 0 8px;
+  margin: 0 var(--s3);
   color: var(--hair);
 }
-.crumbs .current{ color: var(--text); }
+.crumbs .current{ color: var(--ink); }
 
-/* ---------- Hero (Home latest album) ---------- */
+/* ---------- Sections (consistent rhythm) ---------- */
+.hero,
+.latest,
+.list,
+.browse{
+  width: 100%;
+  max-width: var(--max-narrow);
+  margin-left: auto;
+  margin-right: auto;
+  border-top: var(--border);
+  padding-top: var(--s6);
+}
+
+/* ---------- Hero (optional legacy) ---------- */
 .hero{
   text-align:center;
-  max-width: 600px;
-  margin: 40px auto 60px auto;   /* more breathing room */
-  border-top: var(--border);
-  padding-top: 28px;
+  margin-top: var(--s7);
+  margin-bottom: var(--s8);
   display: grid;
-  gap: 18px;                     /* more spacing between lines */
+  gap: var(--s4);
 }
 
 .hero .kicker{
   letter-spacing: 0.14em;
-  font-size: 11px;
+  font-size: var(--text-xs);
   color: var(--muted);
+  text-transform: uppercase;
 }
 
 .hero .title{
-  font-size: 22px;
+  font-size: var(--h2);
   line-height: 1.35;
 }
 
 .hero .sub{
   font-size: 14px;
   color: var(--muted);
-  margin-top: 4px;
-}
-
-.hero .actions{
-  margin-top: 6px;
-}
-
-.hero .actions .btn{
-  padding: 6px 10px;
-  border: 1px solid var(--hair);
-  border-radius: var(--radius);
-  font-size: 13px;
-  color: var(--muted);
-  background: transparent;
-  transition: background 0.2s ease, border-color 0.2s ease;
-}
-
-.hero .actions .btn:hover{
-  background: var(--card);
-  border-color: var(--text);
-  text-decoration: none;
+  margin-top: 0;
 }
 
 /* ---------- Lists (months / albums) ---------- */
 .list{
-  width: 100%;
-  max-width: 600px;
-  margin: 60px auto 0 auto;   /* more separation from hero */
-  border-top: var(--border);
-  padding-top: 22px;
+  margin-top: var(--s8);
 }
 .list ul{
   list-style: none;
   padding: 0;
   margin: 0;
   display: grid;
-  gap: 10px;
+  gap: var(--s2);
   text-align: center;
 }
-
 .list a{
   display:inline-block;
   letter-spacing: 0.04em;
@@ -179,7 +223,7 @@ a:hover{ text-decoration: underline; }
 .index{
   text-align: center;
   display: grid;
-  gap: 10px;
+  gap: var(--s2);
 }
 .index a{
   display:inline-block;
@@ -195,34 +239,59 @@ a:hover{ text-decoration: underline; }
 
 .frame img{
   width: min(980px, 94vw);
-  height: auto;
   display:block;
   border: var(--border);
   background: var(--bg);
+
+  /* subtle micro-polish */
+  transition: border-color var(--t-med) var(--ease);
+}
+html[data-theme="dark"] .frame img{
+  background: transparent;
 }
 
-/* ---------- Pills / Nav ---------- */
+/* ---------- Pills / Buttons / Nav ---------- */
 .pills{
   display:flex;
   justify-content: center;
   align-items:center;
-  gap: 10px;
+  gap: var(--s2);
   flex-wrap: wrap;
 }
 
+/* unify button feel across .btn, .year-btn, .gear, .menu-item */
+.btn,
+.year-btn,
+.gear,
+.menu-item{
+  -webkit-tap-highlight-color: transparent;
+}
+
 .btn{
-  font-size: 13px;
+  font-size: var(--text-sm);
   color: var(--muted);
   padding: 9px 12px;
   border: var(--border);
   border-radius: var(--radius);
   background: transparent;
+  cursor: pointer;
+  transition: background var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
 }
 
-.btn:hover{ text-decoration: underline; }
+/* Remove underline on button hover (keeps editorial link underline separate) */
+.btn:hover{
+  text-decoration: none;
+  border-color: currentColor;
+  color: var(--ink);
+  background: var(--card);
+}
+.btn:focus-visible{
+  outline: var(--focus);
+  outline-offset: var(--focus-offset);
+}
 .btn.disabled{ opacity: .35; pointer-events:none; }
 
-/* Old nav support (kept for backward compatibility) */
+/* Old nav support */
 .nav{
   text-align:center;
   font-size: 14px;
@@ -230,13 +299,13 @@ a:hover{ text-decoration: underline; }
 }
 .nav a + a::before{
   content:"·";
-  margin: 0 14px;
+  margin: 0 var(--s6);
   color: var(--hair);
 }
 
 /* ---------- Footer / About ---------- */
 .footer, .copyright{
-  margin-top: 28px;
+  margin-top: var(--s6);
   text-align:center;
   font-size: 12px;
   color: var(--muted);
@@ -251,16 +320,6 @@ a:hover{ text-decoration: underline; }
 }
 .about p{ margin: 0 0 1.6em; }
 
-/* ---------- Small screens ---------- */
-@media (max-width: 520px){
-  :root{
-    --padY: 56px;
-    --padX: 18px;
-    --gap: 42px;
-  }
-  .hero{ padding: 18px; }
-}
-
 /* ---------- Settings (Gear + Hover Menu) ---------- */
 .settings{
   position: absolute;
@@ -272,18 +331,23 @@ a:hover{ text-decoration: underline; }
 .gear{
   width: 36px;
   height: 32px;
-  border-radius: 999px;
+  border-radius: var(--radius);
   border: 1px solid var(--hair);
   background: transparent;
   color: var(--muted);
   cursor: pointer;
   font-size: 15px;
   line-height: 1;
+  transition: border-color var(--t-fast) var(--ease), color var(--t-fast) var(--ease), background var(--t-fast) var(--ease);
 }
-
 .gear:hover{
-  border-color: var(--text);
-  color: var(--text);
+  border-color: currentColor;
+  color: var(--ink);
+  background: var(--card);
+}
+.gear:focus-visible{
+  outline: var(--focus);
+  outline-offset: var(--focus-offset);
 }
 
 .menu{
@@ -291,16 +355,16 @@ a:hover{ text-decoration: underline; }
   top: 44px;
   right: 0;
   min-width: 140px;
-  padding: 10px;
+  padding: var(--s2);
   border: 1px solid var(--hair);
-  border-radius: 14px;
+  border-radius: var(--radius-soft);
   background: var(--bg);
   box-shadow: 0 10px 30px rgba(0,0,0,0.08);
 
   opacity: 0;
   visibility: hidden;
   transform: translateY(-6px);
-  transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s ease;
+  transition: opacity var(--t-fast) var(--ease), transform var(--t-fast) var(--ease), visibility var(--t-fast) var(--ease);
 }
 
 /* show menu on hover */
@@ -318,60 +382,58 @@ a:hover{ text-decoration: underline; }
   border: 1px solid var(--hair);
   background: transparent;
   font: inherit;
-  font-size: 13px;
+  font-size: var(--text-sm);
   color: var(--muted);
   cursor: pointer;
+  transition: background var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
 }
-
 .menu-item:hover{
-  border-color: var(--text);
-  color: var(--text);
+  border-color: currentColor;
+  color: var(--ink);
   background: var(--card);
+}
+.menu-item:focus-visible{
+  outline: var(--focus);
+  outline-offset: var(--focus-offset);
 }
 
 /* ---------- Home: Latest albums stack ---------- */
 .latest{
   text-align: center;
-  max-width: 600px;
-  margin: 40px auto 0 auto;
-  border-top: var(--border);
-  padding-top: 28px;
+  margin-top: var(--s7);
   display: grid;
-  gap: 18px;
+  gap: var(--s4);
 }
 
 .latest-stack{
   display: grid;
-  gap: 14px;
+  gap: var(--s3);
 }
 
 .latest-item{
   display: inline-block;
-  font-size: 22px;
+  font-size: var(--h2);
   line-height: 1.35;
-  color: var(--text);
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.latest-item:hover{
+  color: var(--ink);
   text-decoration: underline;
+  text-decoration-color: transparent; /* quiet by default */
+  font-weight: 500;
+  transition: text-decoration-color var(--t-fast) var(--ease);
+}
+.latest-item:hover{
+  text-decoration-color: currentColor;
 }
 
 /* ---------- Home: Browse More (Year accordion) ---------- */
 .browse{
-  width: 100%;
-  max-width: 600px;
-  margin: 60px auto 0;
-  border-top: var(--border);
-  padding-top: 22px;
   text-align: center;
+  margin-top: var(--s8);
   display: grid;
-  gap: 16px;
+  gap: var(--s4);
 }
 
 .browse-title{
-  font-size: 11px;
+  font-size: var(--text-xs);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--muted);
@@ -380,7 +442,7 @@ a:hover{ text-decoration: underline; }
 /* Year group */
 .year{
   display: grid;
-  gap: 10px;
+  gap: var(--s2);
 }
 
 /* Year button (pill) */
@@ -394,30 +456,37 @@ a:hover{ text-decoration: underline; }
   cursor: pointer;
 
   font: inherit;
-  font-size: 13px;
+  font-size: var(--text-sm);
 
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--s3);
+
+  transition: background var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
 }
 
 .year-btn:hover{
-  border-color: var(--text);
-  color: var(--text);
+  border-color: currentColor;
+  color: var(--ink);
+  background: var(--card);
 }
 
 .year-btn[aria-expanded="true"]{
-  border-color: var(--text);
-  color: var(--text);
+  border-color: currentColor;
+  color: var(--ink);
+  background: var(--card);
+}
+.year-btn:focus-visible{
+  outline: var(--focus);
+  outline-offset: var(--focus-offset);
 }
 
 /* Chevron */
 .chev{
   font-size: 11px;
   color: currentColor;
-  transition: transform 0.15s ease;
+  transition: transform var(--t-fast) var(--ease);
 }
-
 .year-btn[aria-expanded="true"] .chev{
   transform: rotate(180deg);
 }
@@ -425,11 +494,30 @@ a:hover{ text-decoration: underline; }
 /* Month links (inside open year) */
 .months{
   display: grid;
-  gap: 10px;
-  padding-top: 6px;
+  gap: var(--s2);
+  padding-top: var(--s2);
 }
 
 .month-link{
   display: inline-block;
   letter-spacing: 0.02em;
+}
+
+/* ---------- Small screens ---------- */
+@media (max-width: 520px){
+  :root{
+    --padY: 56px;
+    --padX: 18px;
+    --gap: 42px;
+  }
+
+  .hero{ margin-top: var(--s6); margin-bottom: var(--s7); }
+  .latest{ margin-top: var(--s6); }
+  .list{ margin-top: var(--s7); }
+  .browse{ margin-top: var(--s7); }
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce){
+  *{ transition: none !important; scroll-behavior: auto !important; }
 }

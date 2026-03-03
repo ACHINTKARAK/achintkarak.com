@@ -1,0 +1,435 @@
+:root{
+  /* typography */
+  --font: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+
+  /* layout */
+  --max: 860px;
+  --padY: 76px;
+  --padX: 22px;
+  --gap: 56px;
+
+  /* color (light) */
+  --bg: #ffffff;
+  --text: #161616;
+  --muted: rgba(22, 22, 22, 0.62);
+  --hair: rgba(22, 22, 22, 0.10);
+  --card: rgba(22, 22, 22, 0.03);
+
+  /* UI */
+  --radius: 999px;
+  --border: 1px solid var(--hair);
+}
+
+/* Dark theme (manual toggle will set data-theme="dark" on <html>) */
+html[data-theme="dark"]{
+  --bg: #0f0f10;
+  --text: rgba(255,255,255,0.92);
+  --muted: rgba(255,255,255,0.62);
+  --hair: rgba(255,255,255,0.12);
+  --card: rgba(255,255,255,0.06);
+}
+
+*,
+*::before,
+*::after{ box-sizing:border-box; }
+
+html{ -webkit-text-size-adjust: 100%; }
+
+body{
+  margin:0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a{ color: inherit; text-decoration: none; }
+a:hover{ text-decoration: underline; }
+
+.wrap{
+  position: relative;
+  min-height: 100vh;
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: var(--padY) var(--padX);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+
+/* ---------- Header / Meta ---------- */
+.meta{
+  text-align:center;
+  display:grid;
+  justify-items:center;
+  gap: 8px;
+}
+
+.site-title{
+  font-size: 18px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tagline{
+  margin: 8px auto 0;
+  max-width: 62ch;
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.date{
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.place{
+  font-size: 17px;
+}
+
+
+/* ---------- Breadcrumbs ---------- */
+.crumbs{
+  text-align:center;
+  font-size: 13px;
+  color: var(--muted);
+}
+.crumbs .sep{
+  margin: 0 8px;
+  color: var(--hair);
+}
+.crumbs .current{ color: var(--text); }
+
+/* ---------- Hero (Home latest album) ---------- */
+.hero{
+  text-align:center;
+  max-width: 600px;
+  margin: 40px auto 60px auto;   /* more breathing room */
+  border-top: var(--border);
+  padding-top: 28px;
+  display: grid;
+  gap: 18px;                     /* more spacing between lines */
+}
+
+.hero .kicker{
+  letter-spacing: 0.14em;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.hero .title{
+  font-size: 22px;
+  line-height: 1.35;
+}
+
+.hero .sub{
+  font-size: 14px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.hero .actions{
+  margin-top: 6px;
+}
+
+.hero .actions .btn{
+  padding: 6px 10px;
+  border: 1px solid var(--hair);
+  border-radius: var(--radius);
+  font-size: 13px;
+  color: var(--muted);
+  background: transparent;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.hero .actions .btn:hover{
+  background: var(--card);
+  border-color: var(--text);
+  text-decoration: none;
+}
+
+/* ---------- Lists (months / albums) ---------- */
+.list{
+  width: 100%;
+  max-width: 600px;
+  margin: 60px auto 0 auto;   /* more separation from hero */
+  border-top: var(--border);
+  padding-top: 22px;
+}
+.list ul{
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 10px;
+  text-align: center;
+}
+
+.list a{
+  display:inline-block;
+  letter-spacing: 0.04em;
+}
+
+/* Month page album list */
+.index{
+  text-align: center;
+  display: grid;
+  gap: 10px;
+}
+.index a{
+  display:inline-block;
+  font-size: 15px;
+}
+
+/* ---------- Frames (album images) ---------- */
+.frame{
+  margin: 0;
+  display:flex;
+  justify-content:center;
+}
+
+.frame img{
+  width: min(980px, 94vw);
+  height: auto;
+  display:block;
+  border: var(--border);
+  background: var(--bg);
+}
+
+/* ---------- Pills / Nav ---------- */
+.pills{
+  display:flex;
+  justify-content: center;
+  align-items:center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn{
+  font-size: 13px;
+  color: var(--muted);
+  padding: 9px 12px;
+  border: var(--border);
+  border-radius: var(--radius);
+  background: transparent;
+}
+
+.btn:hover{ text-decoration: underline; }
+.btn.disabled{ opacity: .35; pointer-events:none; }
+
+/* Old nav support (kept for backward compatibility) */
+.nav{
+  text-align:center;
+  font-size: 14px;
+  color: var(--muted);
+}
+.nav a + a::before{
+  content:"·";
+  margin: 0 14px;
+  color: var(--hair);
+}
+
+/* ---------- Footer / About ---------- */
+.footer, .copyright{
+  margin-top: 28px;
+  text-align:center;
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+
+.about{
+  max-width: 56ch;
+  margin: 0 auto;
+  font-size: 15px;
+  line-height: 1.75;
+}
+.about p{ margin: 0 0 1.6em; }
+
+/* ---------- Small screens ---------- */
+@media (max-width: 520px){
+  :root{
+    --padY: 56px;
+    --padX: 18px;
+    --gap: 42px;
+  }
+  .hero{ padding: 18px; }
+}
+
+/* ---------- Settings (Gear + Hover Menu) ---------- */
+.settings{
+  position: absolute;
+  top: var(--padY);
+  right: var(--padX);
+  z-index: 50;
+}
+
+.gear{
+  width: 36px;
+  height: 32px;
+  border-radius: 999px;
+  border: 1px solid var(--hair);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 15px;
+  line-height: 1;
+}
+
+.gear:hover{
+  border-color: var(--text);
+  color: var(--text);
+}
+
+.menu{
+  position: absolute;
+  top: 44px;
+  right: 0;
+  min-width: 140px;
+  padding: 10px;
+  border: 1px solid var(--hair);
+  border-radius: 14px;
+  background: var(--bg);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px);
+  transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s ease;
+}
+
+/* show menu on hover */
+.settings:hover .menu{
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.menu-item{
+  width: 100%;
+  text-align: left;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--hair);
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.menu-item:hover{
+  border-color: var(--text);
+  color: var(--text);
+  background: var(--card);
+}
+
+/* ---------- Home: Latest albums stack ---------- */
+.latest{
+  text-align: center;
+  max-width: 600px;
+  margin: 40px auto 0 auto;
+  border-top: var(--border);
+  padding-top: 28px;
+  display: grid;
+  gap: 18px;
+}
+
+.latest-stack{
+  display: grid;
+  gap: 14px;
+}
+
+.latest-item{
+  display: inline-block;
+  font-size: 22px;
+  line-height: 1.35;
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.latest-item:hover{
+  text-decoration: underline;
+}
+
+/* ---------- Home: Browse More (Year accordion) ---------- */
+.browse{
+  width: 100%;
+  max-width: 600px;
+  margin: 60px auto 0;
+  border-top: var(--border);
+  padding-top: 22px;
+  text-align: center;
+  display: grid;
+  gap: 16px;
+}
+
+.browse-title{
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Year group */
+.year{
+  display: grid;
+  gap: 10px;
+}
+
+/* Year button (pill) */
+.year-btn{
+  margin: 0 auto;
+  padding: 8px 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--hair);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+
+  font: inherit;
+  font-size: 13px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.year-btn:hover{
+  border-color: var(--text);
+  color: var(--text);
+}
+
+.year-btn[aria-expanded="true"]{
+  border-color: var(--text);
+  color: var(--text);
+}
+
+/* Chevron */
+.chev{
+  font-size: 11px;
+  color: currentColor;
+  transition: transform 0.15s ease;
+}
+
+.year-btn[aria-expanded="true"] .chev{
+  transform: rotate(180deg);
+}
+
+/* Month links (inside open year) */
+.months{
+  display: grid;
+  gap: 10px;
+  padding-top: 6px;
+}
+
+.month-link{
+  display: inline-block;
+  letter-spacing: 0.02em;
+}
