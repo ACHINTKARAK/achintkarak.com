@@ -9,6 +9,9 @@
 
   <!-- Month pages -->
   <url>
+    <loc>https://achintkarak.github.io/journal/2026-03/</loc>
+  </url>
+  <url>
     <loc>https://achintkarak.github.io/journal/2026-02/</loc>
   </url>
   <url>
@@ -19,6 +22,9 @@
   </url>
 
   <!-- Album pages -->
+  <url>
+    <loc>https://achintkarak.github.io/journal/2026-03/bodrum-turkiye/</loc>
+  </url>
   <url>
     <loc>https://achintkarak.github.io/journal/2026-02/malta/</loc>
   </url>
