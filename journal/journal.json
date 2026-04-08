@@ -3,7 +3,14 @@
     {
       "id": "2026-04",
       "title": "April 2026",
-      "albums": []
+      "albums": [
+        {
+          "slug": "CapeTown-SouthAfrica",
+          "title": "Capetown Southafrica",
+          "count": 7,
+          "ext": "jpg"
+        }
+      ]
     },
     {
       "id": "2026-03",
