@@ -92,6 +92,15 @@ a:hover{ text-decoration: underline; }
   font-size: 17px;
 }
 
+.album-description{
+  max-width: 520px;
+  margin: 10px auto 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--muted);
+  text-align: center;
+}
+
 /* ---------- Breadcrumbs ---------- */
 
 .crumbs{

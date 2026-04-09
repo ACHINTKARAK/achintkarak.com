@@ -52,11 +52,9 @@ class Album:
     month_id: str           # "2026-01"
     slug: str               # "tenerife-spain"
     title: str              # "Tenerife, Spain" (from titles.json or auto from slug)
-    description: str        # optional album description from description.txt
     image_ext: str          # "jpg" / "JPG" (preserve on disk)
     image_count: int        # 7
     rel_dir: Path           # journal/YYYY-MM/slug (relative to repo root)
-
 
     @property
     def url(self) -> str:
@@ -127,14 +125,6 @@ def load_title_overrides(root: Path) -> Dict[str, str]:
 
     return cleaned
 
-def load_album_description(album_dir: Path) -> str:
-    """
-    Loads optional album description from description.txt inside the album folder.
-    """
-    desc_path = album_dir / "description.txt"
-    if not desc_path.exists():
-        return ""
-    return desc_path.read_text(encoding="utf-8").strip()
 
 def detect_images(album_dir: Path) -> Tuple[int, str]:
     """
@@ -220,15 +210,13 @@ def scan_repo(root: Path) -> Tuple[Tuple[Month, ...], Tuple[Album, ...]]:
                 continue
 
             count, ext = detect_images(adir)
-            
+
             title = title_overrides.get(slug, slug_to_title(slug))
-            description = load_album_description(adir)
 
             alb = Album(
                 month_id=mid,
                 slug=slug,
                 title=title,
-                description=description,
                 image_ext=ext,
                 image_count=count,
                 rel_dir=adir.relative_to(root),

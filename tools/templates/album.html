@@ -37,6 +37,10 @@
     <header class="meta">
       <div class="date">{{ month_title }}</div>
       <div class="place">{{ album.title }}</div>
+	  
+	  {% if album.description %}
+		<p class="album-description">{{ album.description }}</p>
+	  {% endif %}
     </header>
 
     {% for i in range(1, album.image_count + 1) %}
