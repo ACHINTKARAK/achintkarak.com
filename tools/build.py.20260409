@@ -16,15 +16,6 @@ This script scans folders and auto-generates/overwrites:
 - /journal/YYYY-MM/album-slug/index.html (album pages)
 - /sitemap.xml
 
-Optional metadata:
-- /journal/titles.json
-  Maps album slug -> display title
-  Example:
-  {
-    "cape-town-south-africa": "Cape Town, South Africa",
-    "bodrum-turkiye": "Bodrum, Türkiye"
-  }
-
 It NEVER modifies image files.
 """
 
@@ -51,7 +42,7 @@ RE_IMAGE = re.compile(r"^(\d+)\.(jpg|jpeg|png|webp)$", re.IGNORECASE)
 class Album:
     month_id: str           # "2026-01"
     slug: str               # "tenerife-spain"
-    title: str              # "Tenerife, Spain" (from titles.json or auto from slug)
+    title: str              # "Tenerife Spain" (auto from slug)
     image_ext: str          # "jpg" / "JPG" (preserve on disk)
     image_count: int        # 7
     rel_dir: Path           # journal/YYYY-MM/slug (relative to repo root)
@@ -79,14 +70,13 @@ def month_title(month_id: str) -> str:
 
 def slug_to_title(slug: str) -> str:
     """
-    Fallback title generator when no override exists in journal/titles.json.
-    Example:
+    Deterministic, no-manual-metadata title.
+    You can later enhance this with optional meta.json, but for now:
       dingle-ireland -> Dingle Ireland
     """
     words = slug.replace("_", "-").split("-")
     small = {"and", "or", "the", "of", "in", "on", "at", "to", "a"}
     out: List[str] = []
-
     for w in words:
         if not w:
             continue
@@ -95,35 +85,9 @@ def slug_to_title(slug: str) -> str:
             out.append(lw)
         else:
             out.append(lw[:1].upper() + lw[1:])
-
     if out:
         out[0] = out[0][:1].upper() + out[0][1:]
-
     return " ".join(out)
-
-
-def load_title_overrides(root: Path) -> Dict[str, str]:
-    """
-    Loads optional title overrides from /journal/titles.json.
-    Returns a mapping: slug -> display title
-    """
-    titles_path = root / "journal" / "titles.json"
-
-    if not titles_path.exists():
-        return {}
-
-    data = json.loads(titles_path.read_text(encoding="utf-8"))
-
-    if not isinstance(data, dict):
-        raise ValueError("journal/titles.json must contain a JSON object of slug -> title")
-
-    cleaned: Dict[str, str] = {}
-    for slug, title in data.items():
-        if not isinstance(slug, str) or not isinstance(title, str):
-            raise ValueError("journal/titles.json must map string slug keys to string titles")
-        cleaned[slug.strip()] = title.strip()
-
-    return cleaned
 
 
 def detect_images(album_dir: Path) -> Tuple[int, str]:
@@ -135,7 +99,6 @@ def detect_images(album_dir: Path) -> Tuple[int, str]:
     - Same extension for all numbered images
     """
     images: Dict[int, str] = {}
-
     for p in album_dir.iterdir():
         if not p.is_file():
             continue
@@ -189,8 +152,6 @@ def scan_repo(root: Path) -> Tuple[Tuple[Month, ...], Tuple[Album, ...]]:
     if not journal_dir.exists():
         raise FileNotFoundError(f"Missing folder: {journal_dir}")
 
-    title_overrides = load_title_overrides(root)
-
     month_dirs = [p for p in journal_dir.iterdir() if p.is_dir() and RE_MONTH.match(p.name)]
     month_dirs.sort(key=lambda p: p.name, reverse=True)  # newest -> oldest
 
@@ -210,13 +171,10 @@ def scan_repo(root: Path) -> Tuple[Tuple[Month, ...], Tuple[Album, ...]]:
                 continue
 
             count, ext = detect_images(adir)
-
-            title = title_overrides.get(slug, slug_to_title(slug))
-
             alb = Album(
                 month_id=mid,
                 slug=slug,
-                title=title,
+                title=slug_to_title(slug),
                 image_ext=ext,
                 image_count=count,
                 rel_dir=adir.relative_to(root),
@@ -286,8 +244,9 @@ def render_all(root: Path) -> None:
 
     # index.html (home)
     home_t = env.get_template("home.html")
+    
     latest_albums = list(albums[:3])  # newest-first
-
+    
     write_text(
         root / "index.html",
         home_t.render(
@@ -295,6 +254,19 @@ def render_all(root: Path) -> None:
             latest_albums=latest_albums,
         ),
     )
+    
+    # newest-first already
+    # hero_album = albums[0] if len(albums) > 0 else None
+    # secondary_albums = albums[1:3] if len(albums) > 1 else []
+    
+    # write_text(
+        # root / "index.html",
+        # home_t.render(
+            # months=months,
+            # hero_album=hero_album,
+            # secondary_albums=secondary_albums,
+        # ),
+    # )
 
     # month pages
     month_t = env.get_template("month.html")
