@@ -9,14 +9,22 @@
 </head>
 <body>
   <main class="wrap">
-	
-	<div class="settings">
-		<button class="gear" type="button" aria-label="Settings">⚙</button>
-		
-		<div class="menu" aria-label="Settings menu">
-			<button class="menu-item" id="themeToggle" type="button">Theme</button>
-		</div>
-	</div>
+
+    <div class="settings">
+      <button
+        class="gear"
+        id="settingsToggle"
+        type="button"
+        aria-label="Settings"
+        aria-expanded="false"
+        aria-controls="settingsMenu"
+      >⚙</button>
+
+      <div class="menu" id="settingsMenu" aria-label="Settings menu" hidden>
+        <button class="menu-item" id="themeToggle" type="button">Light</button>
+        <a class="menu-item" href="/about/">About</a>
+      </div>
+    </div>
 
     <nav class="crumbs">
       <a href="/">Home</a>
@@ -66,32 +74,85 @@
 
   <script>
     (function () {
-      const KEY = "ak_theme";
+      const THEME_KEY = "ak_theme";
       const html = document.documentElement;
-      const btn = document.getElementById("themeToggle");
+      const themeBtn = document.getElementById("themeToggle");
+      const settingsToggle = document.getElementById("settingsToggle");
+      const settingsMenu = document.getElementById("settingsMenu");
 
-      function apply(theme){
+      function updateThemeButton(theme) {
+        if (themeBtn) {
+          themeBtn.textContent = theme === "dark" ? "Dark" : "Light";
+        }
+      }
+
+      function applyTheme(theme) {
         html.setAttribute("data-theme", theme);
-        try { localStorage.setItem(KEY, theme); } catch(e) {}
+        updateThemeButton(theme);
+        try { localStorage.setItem(THEME_KEY, theme); } catch (e) {}
       }
 
       let theme = "light";
       try {
-        const saved = localStorage.getItem(KEY);
+        const saved = localStorage.getItem(THEME_KEY);
         if (saved === "dark" || saved === "light") theme = saved;
-      } catch(e) {}
+      } catch (e) {}
 
-      apply(theme);
+      applyTheme(theme);
 
-      if (btn) btn.addEventListener("click", function(){
-        const current = html.getAttribute("data-theme") || "light";
-        apply(current === "dark" ? "light" : "dark");
+      if (themeBtn) {
+        themeBtn.addEventListener("click", function (e) {
+          e.stopPropagation();
+          const current = html.getAttribute("data-theme") || "light";
+          applyTheme(current === "dark" ? "light" : "dark");
+        });
+      }
+
+      function openMenu() {
+        if (!settingsMenu || !settingsToggle) return;
+        settingsMenu.hidden = false;
+        settingsToggle.setAttribute("aria-expanded", "true");
+      }
+
+      function closeMenu() {
+        if (!settingsMenu || !settingsToggle) return;
+        settingsMenu.hidden = true;
+        settingsToggle.setAttribute("aria-expanded", "false");
+      }
+
+      function toggleMenu() {
+        if (!settingsMenu) return;
+        if (settingsMenu.hidden) openMenu();
+        else closeMenu();
+      }
+
+      if (settingsToggle) {
+        settingsToggle.addEventListener("click", function (e) {
+          e.stopPropagation();
+          toggleMenu();
+        });
+      }
+
+      if (settingsMenu) {
+        settingsMenu.addEventListener("click", function (e) {
+          e.stopPropagation();
+        });
+      }
+
+      document.addEventListener("click", function (e) {
+        if (
+          settingsMenu &&
+          settingsToggle &&
+          !settingsMenu.hidden &&
+          !e.target.closest(".settings")
+        ) {
+          closeMenu();
+        }
       });
 
-      // Keyboard nav: left/right
-      document.addEventListener("keydown", function(e){
-        if (e.key === "ArrowLeft") {
-          const prev = document.querySelector('a.btn[href*="← Previous"]');
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") {
+          closeMenu();
         }
       });
     })();

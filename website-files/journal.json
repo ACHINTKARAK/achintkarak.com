@@ -1,0 +1,64 @@
+{
+  "months": [
+    {
+      "id": "2026-04",
+      "title": "April 2026",
+      "albums": [
+        {
+          "slug": "CapeTown-SouthAfrica",
+          "title": "Capetown Southafrica",
+          "count": 7,
+          "ext": "jpg"
+        }
+      ]
+    },
+    {
+      "id": "2026-03",
+      "title": "March 2026",
+      "albums": [
+        {
+          "slug": "bodrum-turkiye",
+          "title": "Bodrum Turkiye",
+          "count": 7,
+          "ext": "JPG"
+        }
+      ]
+    },
+    {
+      "id": "2026-02",
+      "title": "February 2026",
+      "albums": [
+        {
+          "slug": "malta",
+          "title": "Malta",
+          "count": 7,
+          "ext": "JPG"
+        }
+      ]
+    },
+    {
+      "id": "2026-01",
+      "title": "January 2026",
+      "albums": [
+        {
+          "slug": "tenerife-spain",
+          "title": "Tenerife Spain",
+          "count": 7,
+          "ext": "JPG"
+        }
+      ]
+    },
+    {
+      "id": "2025-12",
+      "title": "December 2025",
+      "albums": [
+        {
+          "slug": "dingle-ireland",
+          "title": "Dingle Ireland",
+          "count": 7,
+          "ext": "jpg"
+        }
+      ]
+    }
+  ]
+}
