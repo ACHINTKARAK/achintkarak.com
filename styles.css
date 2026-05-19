@@ -3,7 +3,7 @@
   --font: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
 
   /* layout */
-  --max: 860px;
+  --max: 720px;
   --padY: 76px;
   --padX: 22px;
   --gap: 56px;
@@ -237,6 +237,20 @@ a:hover{ text-decoration: underline; }
 .month-link{
   display: inline-block;
   letter-spacing: 0.02em;
+}
+
+.month-with-place{
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 7px;
+  font-size: 15px;
+}
+
+.month-place,
+.month-sep{
+  color: var(--muted);
+  font-size: 13px;
 }
 
 /* ---------- Album Images ---------- */

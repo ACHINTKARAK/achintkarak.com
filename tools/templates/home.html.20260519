@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>December 2025 — Dingle, Ireland — Achint Karak</title>
-  <meta name="description" content="A quiet photographic sequence from Dingle, Ireland, December 2025. 7 images by Achint Karak." />
+  <title>Achint Karak — Photo Journal</title>
+  <meta name="description" content="A long-term, quiet photo journal by Achint Karak." />
   <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
-  <main class="wrap">
+  <main class="wrap home">
 
     <div class="settings">
       <button
@@ -26,89 +26,68 @@
       </div>
     </div>
 
-    <nav class="crumbs">
-      <a href="/">Home</a>
-      <span class="sep">/</span>
-      <a href="/journal/2025-12/">December 2025</a>
-      <span class="sep">/</span>
-      <span class="current">Dingle, Ireland</span>
-    </nav>
-
     <header class="meta">
-      <div class="date">December 2025</div>
-      <div class="place">Dingle, Ireland</div>
-	  
-		<p class="album-description">Atlantic roads, distant horizons, and quiet pauses
-along Ireland’s western edge.</p>
+      <h1 class="site-title">Achint Karak</h1>
+      <p class="tagline">Moments that didn’t ask to be photographed. A quiet photo journal.</p>
     </header>
 
-      <figure class="frame">
-        <img
-          src="1.jpg"
-          alt="Dingle, Ireland — image 1"
-          loading="lazy"
-          decoding="async"
-        />
-      </figure>
-      <figure class="frame">
-        <img
-          src="2.jpg"
-          alt="Dingle, Ireland — image 2"
-          loading="lazy"
-          decoding="async"
-        />
-      </figure>
-      <figure class="frame">
-        <img
-          src="3.jpg"
-          alt="Dingle, Ireland — image 3"
-          loading="lazy"
-          decoding="async"
-        />
-      </figure>
-      <figure class="frame">
-        <img
-          src="4.jpg"
-          alt="Dingle, Ireland — image 4"
-          loading="lazy"
-          decoding="async"
-        />
-      </figure>
-      <figure class="frame">
-        <img
-          src="5.jpg"
-          alt="Dingle, Ireland — image 5"
-          loading="lazy"
-          decoding="async"
-        />
-      </figure>
-      <figure class="frame">
-        <img
-          src="6.jpg"
-          alt="Dingle, Ireland — image 6"
-          loading="lazy"
-          decoding="async"
-        />
-      </figure>
-      <figure class="frame">
-        <img
-          src="7.jpg"
-          alt="Dingle, Ireland — image 7"
-          loading="lazy"
-          decoding="async"
-        />
-      </figure>
+    {% if latest_albums and latest_albums|length > 0 %}
+    <section class="latest">
+      <div class="kicker">Latest Albums</div>
 
-    <nav class="pills" aria-label="Album navigation">
-        <span class="btn disabled">← Previous</span>
+      <div class="latest-stack">
+      {% for a in latest_albums %}
+        <a class="latest-item" href="/journal/{{ a.month_id }}/{{ a.slug }}/">
+          {{ a.title }}
+        </a>
+      {% endfor %}
+      </div>
+    </section>
+    {% endif %}
 
-      <a class="btn" href="/journal/2025-12/">Month</a>
-      <a class="btn" href="/">Home</a>
+    <section class="browse">
+      <div class="browse-title">Browse More</div>
 
-        <a class="btn" href="/journal/2026-01/tenerife-spain/">Next →</a>
-    </nav>
+      {% set ns = namespace(current_year=None) %}
 
-    <footer class="footer">
+      {% for m in months %}
+        {% set year = m.id.split('-')[0] %}
+
+        {% if year != ns.current_year %}
+          {% if ns.current_year is not none %}
+            </div>
+            </div>
+          </div>
+          {% endif %}
+
+          {% set ns.current_year = year %}
+          <div class="year">
+            <button
+              class="year-btn"
+              type="button"
+              data-year="{{ year }}"
+              aria-expanded="false"
+              aria-controls="year-{{ year }}"
+            >
+              {{ year }}
+              <span class="chev" aria-hidden="true">▾</span>
+            </button>
+
+            <div class="year-panel" id="year-{{ year }}" hidden>
+              <div class="months">
+        {% endif %}
+
+        <a class="month-link" href="/journal/{{ m.id }}/">{{ m.title }}</a>
+
+        {% if loop.last %}
+              </div>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </section>
+
+    <footer class="copyright">
       © Achint Karak — Photo Journal
     </footer>
   </main>
@@ -123,20 +102,24 @@ along Ireland’s western edge.</p>
 
       function updateThemeButton(theme) {
         if (themeBtn) {
-          themeBtn.textContent = theme === "dark" ? "Light" : "Dark";
+          themeBtn.textContent = theme === "dark" ? "Dark" : "Light";
         }
       }
 
       function applyTheme(theme) {
         html.setAttribute("data-theme", theme);
         updateThemeButton(theme);
-        try { localStorage.setItem(THEME_KEY, theme); } catch (e) {}
+        try {
+          localStorage.setItem(THEME_KEY, theme);
+        } catch (e) {}
       }
 
       let theme = "light";
       try {
         const saved = localStorage.getItem(THEME_KEY);
-        if (saved === "dark" || saved === "light") theme = saved;
+        if (saved === "dark" || saved === "light") {
+          theme = saved;
+        }
       } catch (e) {}
 
       applyTheme(theme);
@@ -163,8 +146,11 @@ along Ireland’s western edge.</p>
 
       function toggleMenu() {
         if (!settingsMenu) return;
-        if (settingsMenu.hidden) openMenu();
-        else closeMenu();
+        if (settingsMenu.hidden) {
+          openMenu();
+        } else {
+          closeMenu();
+        }
       }
 
       if (settingsToggle) {
@@ -181,6 +167,19 @@ along Ireland’s western edge.</p>
       }
 
       document.addEventListener("click", function (e) {
+        const yearBtn = e.target.closest(".year-btn");
+
+        if (yearBtn) {
+          const year = yearBtn.getAttribute("data-year");
+          const panel = document.getElementById("year-" + year);
+          if (panel) {
+            const isOpen = yearBtn.getAttribute("aria-expanded") === "true";
+            yearBtn.setAttribute("aria-expanded", isOpen ? "false" : "true");
+            panel.hidden = isOpen;
+          }
+          return;
+        }
+
         if (
           settingsMenu &&
           settingsToggle &&
