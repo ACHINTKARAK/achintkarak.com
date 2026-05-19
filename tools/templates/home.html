@@ -48,53 +48,58 @@
     <section class="browse">
       <div class="browse-title">Journal Archive</div>
 
-      {% set ns = namespace(current_year=None) %}
+      {% set latest_month_ids = latest_albums | map(attribute='month_id') | list %}
+      {% set ns = namespace(current_year=None, opened_year=False) %}
 
       {% for m in months %}
-        {% set year = m.id.split('-')[0] %}
+        {% if m.id not in latest_month_ids %}
+          {% set year = m.id.split('-')[0] %}
 
-        {% if year != ns.current_year %}
-          {% if ns.current_year is not none %}
-            </div>
-            </div>
-          </div>
-          {% endif %}
-
-          {% set ns.current_year = year %}
-          <div class="year">
-            <button
-              class="year-btn"
-              type="button"
-              data-year="{{ year }}"
-              aria-expanded="false"
-              aria-controls="year-{{ year }}"
-            >
-              {{ year }}
-              <span class="chev" aria-hidden="true">▾</span>
-            </button>
-
-            <div class="year-panel" id="year-{{ year }}" hidden>
-              <div class="months">
-        {% endif %}
-
-        <a class="month-link month-with-place" href="/journal/{{ m.id }}/">
-          <span class="month-date">{{ m.title }}</span>
-          {% if m.albums %}
-            <span class="month-sep">—</span>
-            <span class="month-place">
-              {% for a in m.albums %}
-                {{ a.title }}{% if not loop.last %} · {% endif %}
-              {% endfor %}
-            </span>
-          {% endif %}
-        </a>
-
-        {% if loop.last %}
+          {% if year != ns.current_year %}
+            {% if ns.opened_year %}
+                </div>
               </div>
             </div>
-          </div>
+            {% endif %}
+
+            {% set ns.current_year = year %}
+            {% set ns.opened_year = True %}
+
+            <div class="year">
+              <button
+                class="year-btn"
+                type="button"
+                data-year="{{ year }}"
+                aria-expanded="false"
+                aria-controls="year-{{ year }}"
+              >
+                {{ year }}
+                <span class="chev" aria-hidden="true">▾</span>
+              </button>
+
+              <div class="year-panel" id="year-{{ year }}" hidden>
+                <div class="months">
+          {% endif %}
+
+          <a class="month-link month-with-place" href="/journal/{{ m.id }}/">
+            <span class="month-date">{{ m.title }}</span>
+            {% if m.albums %}
+              <span class="month-sep">—</span>
+              <span class="month-place">
+                {% for a in m.albums %}
+                  {{ a.title }}{% if not loop.last %} · {% endif %}
+                {% endfor %}
+              </span>
+            {% endif %}
+          </a>
         {% endif %}
       {% endfor %}
+
+      {% if ns.opened_year %}
+                </div>
+              </div>
+            </div>
+      {% endif %}
     </section>
 
     <footer class="copyright">
