@@ -4,20 +4,20 @@
 
   <!-- Home -->
   <url>
-    <loc>https://achintkarak.github.io/</loc>
+    <loc>https://achintkarak.com/</loc>
   </url>
 
   <!-- Month pages -->
   {% for m in months %}
   <url>
-    <loc>https://achintkarak.github.io/journal/{{ m.id }}/</loc>
+    <loc>https://achintkarak.com/journal/{{ m.id }}/</loc>
   </url>
   {% endfor %}
 
   <!-- Album pages -->
   {% for a in albums %}
   <url>
-    <loc>https://achintkarak.github.io/journal/{{ a.month_id }}/{{ a.slug }}/</loc>
+    <loc>https://achintkarak.com/journal/{{ a.month_id }}/{{ a.slug }}/</loc>
   </url>
   {% endfor %}
 
