@@ -1,6 +1,18 @@
 {
   "months": [
     {
+      "id": "2026-07",
+      "title": "July 2026",
+      "albums": [
+        {
+          "slug": "kilkee-lahinch-ireland",
+          "title": "Kilkee and Lahinch, Ireland",
+          "count": 7,
+          "ext": "jpg"
+        }
+      ]
+    },
+    {
       "id": "2026-05",
       "title": "May 2026",
       "albums": [
