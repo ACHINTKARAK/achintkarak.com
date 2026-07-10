@@ -32,6 +32,7 @@ from __future__ import annotations
 
 import json
 import re
+import sys
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -42,6 +43,7 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 RE_MONTH = re.compile(r"^\d{4}-\d{2}$")
 RE_IMAGE = re.compile(r"^(\d+)\.(jpg|jpeg|png|webp)$", re.IGNORECASE)
+EXPECTED_IMAGE_COUNT = 7
 
 
 # -----------------------------
@@ -136,6 +138,57 @@ def load_album_description(album_dir: Path) -> str:
         return ""
     return desc_path.read_text(encoding="utf-8").strip()
 
+
+def prompt_for_missing_description(album_dir: Path, root: Path, interactive: bool) -> str:
+    """
+    If description.txt is missing, ask for a one-line description while building.
+    If the user enters text, this writes description.txt.
+    If left blank, the album builds without a description.
+    """
+    desc_path = album_dir / "description.txt"
+    if desc_path.exists():
+        return desc_path.read_text(encoding="utf-8").strip()
+
+    rel = album_dir.relative_to(root)
+    print(f"⚠ Missing description.txt: {rel}")
+
+    if not interactive:
+        print("  Non-interactive build: continuing with empty description.")
+        return ""
+
+    desc = input("  Enter one-line album description now, or press Enter to skip: ").strip()
+    if desc:
+        desc_path.write_text(desc + "\n", encoding="utf-8", newline="\n")
+        print(f"  ✅ Wrote: {desc_path.relative_to(root)}")
+    else:
+        print("  Continuing without description.")
+
+    return desc
+
+
+def confirm_image_count(album_dir: Path, root: Path, count: int, interactive: bool) -> None:
+    """
+    The journal format expects exactly EXPECTED_IMAGE_COUNT numbered images per album.
+    Ask before continuing if the count is different.
+    """
+    if count == EXPECTED_IMAGE_COUNT:
+        return
+
+    rel = album_dir.relative_to(root)
+    msg = (
+        f"⚠ Image count warning: {rel} has {count} numbered images. "
+        f"Journal standard is exactly {EXPECTED_IMAGE_COUNT}."
+    )
+    print(msg)
+
+    if not interactive:
+        raise ValueError(msg)
+
+    answer = input("  Continue anyway? [y/N]: ").strip().lower()
+    if answer not in {"y", "yes"}:
+        raise ValueError(f"Stopped. Fix image count in {album_dir}")
+
+
 def detect_images(album_dir: Path) -> Tuple[int, str]:
     """
     Detects contiguous image sequence 1..N and the extension (preserving case).
@@ -194,7 +247,7 @@ def sort_album_slugs(slugs: List[str]) -> List[str]:
 # -----------------------------
 # Scanning
 # -----------------------------
-def scan_repo(root: Path) -> Tuple[Tuple[Month, ...], Tuple[Album, ...]]:
+def scan_repo(root: Path, interactive: bool = True) -> Tuple[Tuple[Month, ...], Tuple[Album, ...]]:
     journal_dir = root / "journal"
     if not journal_dir.exists():
         raise FileNotFoundError(f"Missing folder: {journal_dir}")
@@ -220,9 +273,10 @@ def scan_repo(root: Path) -> Tuple[Tuple[Month, ...], Tuple[Album, ...]]:
                 continue
 
             count, ext = detect_images(adir)
-            
+            confirm_image_count(adir, root, count, interactive)
+
             title = title_overrides.get(slug, slug_to_title(slug))
-            description = load_album_description(adir)
+            description = prompt_for_missing_description(adir, root, interactive)
 
             alb = Album(
                 month_id=mid,
@@ -288,8 +342,8 @@ def build_manifest(months: Tuple[Month, ...]) -> Dict[str, Any]:
     }
 
 
-def render_all(root: Path) -> None:
-    months, albums = scan_repo(root)
+def render_all(root: Path, interactive: bool = True) -> None:
+    months, albums = scan_repo(root, interactive=interactive)
     env = make_env(root)
 
     # journal/journal.json
@@ -344,7 +398,7 @@ def render_all(root: Path) -> None:
 
 def main() -> None:
     root = Path(__file__).resolve().parents[1]  # repo root
-    render_all(root)
+    render_all(root, interactive=sys.stdin.isatty())
 
 
 if __name__ == "__main__":
