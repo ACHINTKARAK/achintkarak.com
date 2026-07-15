@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>May 2026 — Lake Como, Italy — Achint Karak</title>
-  <meta name="description" content="A quiet photographic sequence from Lake Como, Italy, May 2026. 7 images by Achint Karak." />
+  <title>{{ month_title }} — {{ album.title }} — Achint Karak</title>
+  <meta name="description" content="A quiet photographic sequence from {{ album.title }}, {{ month_title }}. {{ album.image_count }} images by Achint Karak." />
   <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
@@ -29,82 +29,46 @@
     <nav class="crumbs">
       <a href="/">Home</a>
       <span class="sep">/</span>
-      <a href="/journal/2026-05/">May 2026</a>
+      <a href="/journal/{{ album.month_id }}/">{{ month_title }}</a>
       <span class="sep">/</span>
-      <span class="current">Lake Como, Italy</span>
+      <span class="current">{{ album.title }}</span>
     </nav>
 
     <header class="meta">
-      <div class="date">May 2026</div>
-      <div class="place">Lake Como, Italy</div>
+      <div class="date">{{ month_title }}</div>
+      <div class="place">{{ album.title }}</div>
 	  
-		<p class="album-description">Low clouds, wet paths and still water, where her presence became part of the lake’s quiet weather.</p>
+	  {% if album.description %}
+		<p class="album-description">{{ album.description }}</p>
+	  {% endif %}
     </header>
 
+    {% for i in range(1, album.image_count + 1) %}
       <figure class="frame">
         <img
-          src="1.jpg"
-          alt="Lake Como, Italy — image 1"
+          src="{{ i }}.{{ album.image_ext }}"
+          alt="{{ album.title }} — image {{ i }}"
           loading="lazy"
           decoding="async"
         />
       </figure>
-      <figure class="frame">
-        <img
-          src="2.jpg"
-          alt="Lake Como, Italy — image 2"
-          loading="lazy"
-          decoding="async"
-        />
-      </figure>
-      <figure class="frame">
-        <img
-          src="3.jpg"
-          alt="Lake Como, Italy — image 3"
-          loading="lazy"
-          decoding="async"
-        />
-      </figure>
-      <figure class="frame">
-        <img
-          src="4.jpg"
-          alt="Lake Como, Italy — image 4"
-          loading="lazy"
-          decoding="async"
-        />
-      </figure>
-      <figure class="frame">
-        <img
-          src="5.jpg"
-          alt="Lake Como, Italy — image 5"
-          loading="lazy"
-          decoding="async"
-        />
-      </figure>
-      <figure class="frame">
-        <img
-          src="6.jpg"
-          alt="Lake Como, Italy — image 6"
-          loading="lazy"
-          decoding="async"
-        />
-      </figure>
-      <figure class="frame">
-        <img
-          src="7.jpg"
-          alt="Lake Como, Italy — image 7"
-          loading="lazy"
-          decoding="async"
-        />
-      </figure>
+    {% endfor %}
 
     <nav class="pills" aria-label="Album navigation">
-        <a class="btn" href="/journal/2026-04/cape-town-south-africa/">← Previous</a>
+      {% if prev_album %}
+        <a class="btn" href="/journal/{{ prev_album.month_id }}/{{ prev_album.slug }}/">← Previous</a>
+      {% else %}
+        <span class="btn disabled">← Previous</span>
+      {% endif %}
 
-      <a class="btn" href="/journal/2026-05/">Month</a>
+      <a class="btn" href="/journal/{{ album.month_id }}/">Month</a>
       <a class="btn" href="/">Home</a>
 
-        <a class="btn" href="/journal/2026-07/westcork-ireland/">Next →</a>
+      {% if next_album %}
+        <a class="btn" href="/journal/{{ next_album.month_id }}/{{ next_album.slug }}/">Next →</a>
+      {% else %}
+        <span class="btn disabled">Next →</span>
+      {% endif %}
     </nav>
 
     <footer class="footer">
@@ -122,7 +86,7 @@
 
       function updateThemeButton(theme) {
         if (themeBtn) {
-          themeBtn.textContent = theme === "dark" ? "Light" : "Dark";
+          themeBtn.textContent = theme === "dark" ? "Dark" : "Light";
         }
       }
 
