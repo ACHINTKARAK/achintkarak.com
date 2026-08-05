@@ -1,5 +1,23 @@
-﻿.venv/
+.venv/
 __pycache__/
 *.pyc
 .DS_Store
 Thumbs.db
+
+# Local diagnostics and repair artefacts
+journal-debug/
+journal-debug.zip
+master-fix-backup-*/
+*.before-folder-date-sort
+*.before-master-fix
+
+# Local editor and timestamped backups
+tools/*.backup
+tools/*.backup.py
+tools/*.before-*
+tools/templates/*.backup
+tools/templates/* copy.html
+styles.css.[0-9]*
+website-files.old.legacy/
+cleanup-audit.txt
+cleanup-verification.txt

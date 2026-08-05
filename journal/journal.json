@@ -1,26 +1,51 @@
 {
+  "schema_version": 1,
   "months": [
+    {
+      "id": "2026-08",
+      "title": "August 2026",
+      "albums": [
+        {
+          "slug": "dublin-zoo-ireland",
+          "title": "Dublin Zoo, Ireland",
+          "description": "A place built for human joy, though perhaps not for the animals.",
+          "count": 7,
+          "ext": "jpg",
+          "url": "/journal/2026-08/dublin-zoo-ireland/",
+          "created_at": "2026-08-05T09:40:20+00:00"
+        }
+      ]
+    },
     {
       "id": "2026-07",
       "title": "July 2026",
       "albums": [
         {
-          "slug": "kilkee-lahinch-ireland",
-          "title": "Kilkee and Lahinch, Ireland",
+          "slug": "wicklow-ireland",
+          "title": "Wicklow, Ireland",
+          "description": "Sunny summer afternoon picnic - Best use of the weather",
           "count": 7,
-          "ext": "jpg"
+          "ext": "jpg",
+          "url": "/journal/2026-07/wicklow-ireland/",
+          "created_at": "2026-07-29T22:35:42+00:00"
         },
         {
           "slug": "westcork-ireland",
           "title": "Westcork, Ireland",
+          "description": "Western beauty of Irish summer, my favourite, Cork.",
           "count": 7,
-          "ext": "jpg"
+          "ext": "jpg",
+          "url": "/journal/2026-07/westcork-ireland/",
+          "created_at": "2026-07-15T21:06:51+00:00"
         },
         {
-          "slug": "wicklow-ireland",
-          "title": "Wicklow, Ireland",
+          "slug": "kilkee-lahinch-ireland",
+          "title": "Kilkee and Lahinch, Ireland",
+          "description": "Summer clouds, Atlantic wind, cliffs and surfing beaches along Ireland’s western edge.",
           "count": 7,
-          "ext": "jpg"
+          "ext": "jpg",
+          "url": "/journal/2026-07/kilkee-lahinch-ireland/",
+          "created_at": "2026-07-07T14:26:10+00:00"
         }
       ]
     },
@@ -31,8 +56,11 @@
         {
           "slug": "lake-como-italy",
           "title": "Lake Como, Italy",
+          "description": "Low clouds, wet paths and still water, where her presence became part of the lake’s quiet weather.",
           "count": 7,
-          "ext": "jpg"
+          "ext": "jpg",
+          "url": "/journal/2026-05/lake-como-italy/",
+          "created_at": "2026-05-14T11:22:15+00:00"
         }
       ]
     },
@@ -43,8 +71,11 @@
         {
           "slug": "cape-town-south-africa",
           "title": "Cape Town, South Africa",
+          "description": "Atlantic wind, cliffs, open coastline and vineyards\nwhere small moments appear within vast landscapes.",
           "count": 7,
-          "ext": "jpg"
+          "ext": "jpg",
+          "url": "/journal/2026-04/cape-town-south-africa/",
+          "created_at": "2026-04-08T17:07:58+00:00"
         }
       ]
     },
@@ -55,8 +86,11 @@
         {
           "slug": "bodrum-turkiye",
           "title": "Bodrum, Türkiye",
+          "description": "White hillside towns and Aegean horizons,\nobserved through small everyday moments.",
           "count": 7,
-          "ext": "JPG"
+          "ext": "JPG",
+          "url": "/journal/2026-03/bodrum-turkiye/",
+          "created_at": "2026-03-18T22:43:43+00:00"
         }
       ]
     },
@@ -67,8 +101,11 @@
         {
           "slug": "malta",
           "title": "Malta",
+          "description": "Stone streets and Mediterranean light,\nrevealing quiet details within the city’s layered spaces.",
           "count": 7,
-          "ext": "JPG"
+          "ext": "JPG",
+          "url": "/journal/2026-02/malta/",
+          "created_at": "2026-03-03T11:33:37+00:00"
         }
       ]
     },
@@ -79,8 +116,11 @@
         {
           "slug": "tenerife-spain",
           "title": "Tenerife, Spain",
+          "description": "Volcanic terrain and shifting Atlantic light,\nwhere small figures move through vast landscapes.",
           "count": 7,
-          "ext": "JPG"
+          "ext": "JPG",
+          "url": "/journal/2026-01/tenerife-spain/",
+          "created_at": "2026-02-03T20:45:13+00:00"
         }
       ]
     },
@@ -91,8 +131,11 @@
         {
           "slug": "dingle-ireland",
           "title": "Dingle, Ireland",
+          "description": "Atlantic roads, distant horizons, and quiet pauses\nalong Ireland’s western edge.",
           "count": 7,
-          "ext": "jpg"
+          "ext": "jpg",
+          "url": "/journal/2025-12/dingle-ireland/",
+          "created_at": "2025-12-29T18:31:27+00:00"
         }
       ]
     }

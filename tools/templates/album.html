@@ -4,8 +4,12 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>{{ month_title }} — {{ album.title }} — Achint Karak</title>
-  <meta name="description" content="A quiet photographic sequence from {{ album.title }}, {{ month_title }}. {{ album.image_count }} images by Achint Karak." />
-  <link rel="stylesheet" href="/styles.css" />
+  <meta
+    name="description"
+    content="A quiet photographic sequence from {{ album.title }}, {{ month_title }}. {{ album.image_count }} images by Achint Karak."
+  />
+  <link rel="stylesheet" href="/styles.css?v={{ css_version }}" />
+  <script src="/site.js?v={{ js_version }}"></script>
 </head>
 <body>
   <main class="wrap">
@@ -21,7 +25,7 @@
       >⚙</button>
 
       <div class="menu" id="settingsMenu" aria-label="Settings menu" hidden>
-        <button class="menu-item" id="themeToggle" type="button">Light</button>
+        <button class="menu-item" id="themeToggle" type="button">Dark</button>
         <a class="menu-item" href="/about/">About</a>
       </div>
     </div>
@@ -37,37 +41,37 @@
     <header class="meta">
       <div class="date">{{ month_title }}</div>
       <div class="place">{{ album.title }}</div>
-	  
-	  {% if album.description %}
-		<p class="album-description">{{ album.description }}</p>
-	  {% endif %}
+
+      {% if album.description %}
+      <p class="album-description">{{ album.description }}</p>
+      {% endif %}
     </header>
 
-    {% for i in range(1, album.image_count + 1) %}
-      <figure class="frame">
-        <img
-          src="{{ i }}.{{ album.image_ext }}"
-          alt="{{ album.title }} — image {{ i }}"
-          loading="lazy"
-          decoding="async"
-        />
-      </figure>
+    {% for image_number in range(1, album.image_count + 1) %}
+    <figure class="frame">
+      <img
+        src="{{ image_number }}.{{ album.image_ext }}"
+        alt="{{ album.title }} — image {{ image_number }}"
+        loading="lazy"
+        decoding="async"
+      />
+    </figure>
     {% endfor %}
 
     <nav class="pills" aria-label="Album navigation">
       {% if prev_album %}
-        <a class="btn" href="/journal/{{ prev_album.month_id }}/{{ prev_album.slug }}/">← Previous</a>
+      <a class="btn" href="{{ prev_album.url }}">← Previous</a>
       {% else %}
-        <span class="btn disabled">← Previous</span>
+      <span class="btn disabled">← Previous</span>
       {% endif %}
 
       <a class="btn" href="/journal/{{ album.month_id }}/">Month</a>
       <a class="btn" href="/">Home</a>
 
       {% if next_album %}
-        <a class="btn" href="/journal/{{ next_album.month_id }}/{{ next_album.slug }}/">Next →</a>
+      <a class="btn" href="{{ next_album.url }}">Next →</a>
       {% else %}
-        <span class="btn disabled">Next →</span>
+      <span class="btn disabled">Next →</span>
       {% endif %}
     </nav>
 
@@ -75,91 +79,5 @@
       © Achint Karak — Photo Journal
     </footer>
   </main>
-
-  <script>
-    (function () {
-      const THEME_KEY = "ak_theme";
-      const html = document.documentElement;
-      const themeBtn = document.getElementById("themeToggle");
-      const settingsToggle = document.getElementById("settingsToggle");
-      const settingsMenu = document.getElementById("settingsMenu");
-
-      function updateThemeButton(theme) {
-        if (themeBtn) {
-          themeBtn.textContent = theme === "dark" ? "Light" : "Dark";
-        }
-      }
-
-      function applyTheme(theme) {
-        html.setAttribute("data-theme", theme);
-        updateThemeButton(theme);
-        try { localStorage.setItem(THEME_KEY, theme); } catch (e) {}
-      }
-
-      let theme = "light";
-      try {
-        const saved = localStorage.getItem(THEME_KEY);
-        if (saved === "dark" || saved === "light") theme = saved;
-      } catch (e) {}
-
-      applyTheme(theme);
-
-      if (themeBtn) {
-        themeBtn.addEventListener("click", function (e) {
-          e.stopPropagation();
-          const current = html.getAttribute("data-theme") || "light";
-          applyTheme(current === "dark" ? "light" : "dark");
-        });
-      }
-
-      function openMenu() {
-        if (!settingsMenu || !settingsToggle) return;
-        settingsMenu.hidden = false;
-        settingsToggle.setAttribute("aria-expanded", "true");
-      }
-
-      function closeMenu() {
-        if (!settingsMenu || !settingsToggle) return;
-        settingsMenu.hidden = true;
-        settingsToggle.setAttribute("aria-expanded", "false");
-      }
-
-      function toggleMenu() {
-        if (!settingsMenu) return;
-        if (settingsMenu.hidden) openMenu();
-        else closeMenu();
-      }
-
-      if (settingsToggle) {
-        settingsToggle.addEventListener("click", function (e) {
-          e.stopPropagation();
-          toggleMenu();
-        });
-      }
-
-      if (settingsMenu) {
-        settingsMenu.addEventListener("click", function (e) {
-          e.stopPropagation();
-        });
-      }
-
-      document.addEventListener("click", function (e) {
-        if (
-          settingsMenu &&
-          settingsToggle &&
-          !settingsMenu.hidden &&
-          !e.target.closest(".settings")
-        ) {
-          closeMenu();
-        }
-      });
-
-      document.addEventListener("keydown", function (e) {
-        if (e.key === "Escape") {
-          closeMenu();
-        }
-      });
-    })();
-  </script>
 </body>
 </html>

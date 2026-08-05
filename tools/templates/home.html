@@ -4,8 +4,12 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Achint Karak — Photo Journal</title>
-  <meta name="description" content="A long-term, quiet photo journal by Achint Karak." />
-  <link rel="stylesheet" href="/styles.css" />
+  <meta
+    name="description"
+    content="A long-term, quiet photo journal by Achint Karak."
+  />
+  <link rel="stylesheet" href="/styles.css?v={{ css_version }}" />
+  <script src="/site.js?v={{ js_version }}"></script>
 </head>
 <body>
   <main class="wrap home">
@@ -21,7 +25,7 @@
       >⚙</button>
 
       <div class="menu" id="settingsMenu" aria-label="Settings menu" hidden>
-        <button class="menu-item" id="themeToggle" type="button">Light</button>
+        <button class="menu-item" id="themeToggle" type="button">Dark</button>
         <a class="menu-item" href="/about/">About</a>
       </div>
     </div>
@@ -31,16 +35,16 @@
       <p class="tagline">Views that often go unnoticed</p>
     </header>
 
-    {% if latest_albums and latest_albums|length > 0 %}
+    {% if latest_albums %}
     <section class="latest">
       <div class="kicker">Latest Albums</div>
 
       <div class="latest-stack">
-      {% for a in latest_albums %}
-        <a class="latest-item" href="/journal/{{ a.month_id }}/{{ a.slug }}/">
-          {{ a.title }}
+        {% for album in latest_albums %}
+        <a class="latest-item" href="{{ album.url }}">
+          {{ album.title }}
         </a>
-      {% endfor %}
+        {% endfor %}
       </div>
     </section>
     {% endif %}
@@ -48,169 +52,54 @@
     <section class="browse">
       <div class="browse-title">Journal Archive</div>
 
-      {% set latest_month_ids = latest_albums | map(attribute='month_id') | list %}
-      {% set ns = namespace(current_year=None, opened_year=False) %}
+      {% for archive_year in archive_years %}
+      <details class="year" {% if loop.first %}open{% endif %}>
+        <summary class="year-btn">
+          {{ archive_year.year }}
+          <span class="chev" aria-hidden="true">▾</span>
+        </summary>
 
-      {% for m in months %}
-        {% if m.id not in latest_month_ids %}
-          {% set year = m.id.split('-')[0] %}
+        <div class="year-panel">
+          <div class="months">
 
-          {% if year != ns.current_year %}
-            {% if ns.opened_year %}
-                </div>
-              </div>
-            </div>
-            {% endif %}
+            {% for month in archive_year.months %}
+              {% set album_count = month.albums | length %}
 
-            {% set ns.current_year = year %}
-            {% set ns.opened_year = True %}
+              {% if album_count == 1 %}
+                {% set album = month.albums[0] %}
+                <a class="month-link month-with-place" href="{{ album.url }}">
+                  <span class="month-date">{{ month.title }}</span>
+                  <span class="month-sep">—</span>
+                  <span class="month-place">{{ album.title }}</span>
+                </a>
 
-            <div class="year">
-              <button
-                class="year-btn"
-                type="button"
-                data-year="{{ year }}"
-                aria-expanded="false"
-                aria-controls="year-{{ year }}"
-              >
-                {{ year }}
-                <span class="chev" aria-hidden="true">▾</span>
-              </button>
+              {% else %}
+                <details class="archive-month">
+                  <summary class="month-btn">
+                    <span class="month-date">{{ month.title }}</span>
+                    <span class="month-sep">—</span>
+                    <span class="month-count">{{ album_count }} albums</span>
+                    <span class="chev month-chev" aria-hidden="true">▾</span>
+                  </summary>
 
-              <div class="year-panel" id="year-{{ year }}" hidden>
-                <div class="months">
-          {% endif %}
+                  <div class="month-albums">
+                    {% for album in month.albums %}
+                    <a href="{{ album.url }}">{{ album.title }}</a>
+                    {% endfor %}
+                  </div>
+                </details>
+              {% endif %}
+            {% endfor %}
 
-          <a class="month-link month-with-place" href="/journal/{{ m.id }}/">
-            <span class="month-date">{{ m.title }}</span>
-            {% if m.albums %}
-              <span class="month-sep">—</span>
-              <span class="month-place">
-                {% for a in m.albums %}
-                  {{ a.title }}{% if not loop.last %} · {% endif %}
-                {% endfor %}
-              </span>
-            {% endif %}
-          </a>
-        {% endif %}
+          </div>
+        </div>
+      </details>
       {% endfor %}
-
-      {% if ns.opened_year %}
-                </div>
-              </div>
-            </div>
-      {% endif %}
     </section>
 
     <footer class="copyright">
       © Achint Karak — Photo Journal
     </footer>
   </main>
-
-  <script>
-    (function () {
-      const THEME_KEY = "ak_theme";
-      const html = document.documentElement;
-      const themeBtn = document.getElementById("themeToggle");
-      const settingsToggle = document.getElementById("settingsToggle");
-      const settingsMenu = document.getElementById("settingsMenu");
-
-      function updateThemeButton(theme) {
-        if (themeBtn) {
-          themeBtn.textContent = theme === "dark" ? "Light" : "Dark";
-        }
-      }
-
-      function applyTheme(theme) {
-        html.setAttribute("data-theme", theme);
-        updateThemeButton(theme);
-        try {
-          localStorage.setItem(THEME_KEY, theme);
-        } catch (e) {}
-      }
-
-      let theme = "light";
-      try {
-        const saved = localStorage.getItem(THEME_KEY);
-        if (saved === "dark" || saved === "light") {
-          theme = saved;
-        }
-      } catch (e) {}
-
-      applyTheme(theme);
-
-      if (themeBtn) {
-        themeBtn.addEventListener("click", function (e) {
-          e.stopPropagation();
-          const current = html.getAttribute("data-theme") || "light";
-          applyTheme(current === "dark" ? "light" : "dark");
-        });
-      }
-
-      function openMenu() {
-        if (!settingsMenu || !settingsToggle) return;
-        settingsMenu.hidden = false;
-        settingsToggle.setAttribute("aria-expanded", "true");
-      }
-
-      function closeMenu() {
-        if (!settingsMenu || !settingsToggle) return;
-        settingsMenu.hidden = true;
-        settingsToggle.setAttribute("aria-expanded", "false");
-      }
-
-      function toggleMenu() {
-        if (!settingsMenu) return;
-        if (settingsMenu.hidden) {
-          openMenu();
-        } else {
-          closeMenu();
-        }
-      }
-
-      if (settingsToggle) {
-        settingsToggle.addEventListener("click", function (e) {
-          e.stopPropagation();
-          toggleMenu();
-        });
-      }
-
-      if (settingsMenu) {
-        settingsMenu.addEventListener("click", function (e) {
-          e.stopPropagation();
-        });
-      }
-
-      document.addEventListener("click", function (e) {
-        const yearBtn = e.target.closest(".year-btn");
-
-        if (yearBtn) {
-          const year = yearBtn.getAttribute("data-year");
-          const panel = document.getElementById("year-" + year);
-          if (panel) {
-            const isOpen = yearBtn.getAttribute("aria-expanded") === "true";
-            yearBtn.setAttribute("aria-expanded", isOpen ? "false" : "true");
-            panel.hidden = isOpen;
-          }
-          return;
-        }
-
-        if (
-          settingsMenu &&
-          settingsToggle &&
-          !settingsMenu.hidden &&
-          !e.target.closest(".settings")
-        ) {
-          closeMenu();
-        }
-      });
-
-      document.addEventListener("keydown", function (e) {
-        if (e.key === "Escape") {
-          closeMenu();
-        }
-      });
-    })();
-  </script>
 </body>
 </html>

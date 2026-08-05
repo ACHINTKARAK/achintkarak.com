@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset
-  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-
-  <!-- Home -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://achintkarak.com/</loc>
   </url>
 
-  <!-- Month pages -->
+  <url>
+    <loc>https://achintkarak.com/about/</loc>
+  </url>
+
+  <url>
+    <loc>https://achintkarak.com/journal/2026-08/</loc>
+  </url>
   <url>
     <loc>https://achintkarak.com/journal/2026-07/</loc>
   </url>
@@ -30,15 +33,17 @@
     <loc>https://achintkarak.com/journal/2025-12/</loc>
   </url>
 
-  <!-- Album pages -->
   <url>
-    <loc>https://achintkarak.com/journal/2026-07/kilkee-lahinch-ireland/</loc>
+    <loc>https://achintkarak.com/journal/2026-08/dublin-zoo-ireland/</loc>
+  </url>
+  <url>
+    <loc>https://achintkarak.com/journal/2026-07/wicklow-ireland/</loc>
   </url>
   <url>
     <loc>https://achintkarak.com/journal/2026-07/westcork-ireland/</loc>
   </url>
   <url>
-    <loc>https://achintkarak.com/journal/2026-07/wicklow-ireland/</loc>
+    <loc>https://achintkarak.com/journal/2026-07/kilkee-lahinch-ireland/</loc>
   </url>
   <url>
     <loc>https://achintkarak.com/journal/2026-05/lake-como-italy/</loc>
@@ -58,5 +63,4 @@
   <url>
     <loc>https://achintkarak.com/journal/2025-12/dingle-ireland/</loc>
   </url>
-
 </urlset>

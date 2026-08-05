@@ -41,13 +41,11 @@ import hashlib
 import json
 import re
 import sys
-import unicodedata
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Mapping, Sequence, Tuple
 
-import pycountry
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 
@@ -58,6 +56,220 @@ RE_CANONICAL_SLUG = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 EXPECTED_IMAGE_COUNT = 7
 LATEST_ALBUM_COUNT = 3
 ORDER_SCHEMA_VERSION = 1
+
+COUNTRY_SUFFIX_TITLES: Dict[str, str] = {
+    "afghanistan": "Afghanistan",
+    "albania": "Albania",
+    "algeria": "Algeria",
+    "andorra": "Andorra",
+    "angola": "Angola",
+    "antigua-and-barbuda": "Antigua and Barbuda",
+    "argentina": "Argentina",
+    "armenia": "Armenia",
+    "australia": "Australia",
+    "austria": "Austria",
+    "azerbaijan": "Azerbaijan",
+    "bahamas": "The Bahamas",
+    "bahrain": "Bahrain",
+    "bangladesh": "Bangladesh",
+    "barbados": "Barbados",
+    "belarus": "Belarus",
+    "belgium": "Belgium",
+    "belize": "Belize",
+    "benin": "Benin",
+    "bhutan": "Bhutan",
+    "bolivia": "Bolivia",
+    "bosnia-and-herzegovina": "Bosnia and Herzegovina",
+    "botswana": "Botswana",
+    "brazil": "Brazil",
+    "brunei": "Brunei",
+    "bulgaria": "Bulgaria",
+    "burkina-faso": "Burkina Faso",
+    "burundi": "Burundi",
+    "cabo-verde": "Cabo Verde",
+    "cambodia": "Cambodia",
+    "cameroon": "Cameroon",
+    "canada": "Canada",
+    "central-african-republic": "Central African Republic",
+    "chad": "Chad",
+    "chile": "Chile",
+    "china": "China",
+    "colombia": "Colombia",
+    "comoros": "Comoros",
+    "costa-rica": "Costa Rica",
+    "croatia": "Croatia",
+    "cuba": "Cuba",
+    "cyprus": "Cyprus",
+    "czechia": "Czechia",
+    "democratic-republic-of-the-congo": "Democratic Republic of the Congo",
+    "denmark": "Denmark",
+    "djibouti": "Djibouti",
+    "dominica": "Dominica",
+    "dominican-republic": "Dominican Republic",
+    "ecuador": "Ecuador",
+    "egypt": "Egypt",
+    "el-salvador": "El Salvador",
+    "equatorial-guinea": "Equatorial Guinea",
+    "eritrea": "Eritrea",
+    "estonia": "Estonia",
+    "eswatini": "Eswatini",
+    "ethiopia": "Ethiopia",
+    "fiji": "Fiji",
+    "finland": "Finland",
+    "france": "France",
+    "gabon": "Gabon",
+    "gambia": "The Gambia",
+    "georgia": "Georgia",
+    "germany": "Germany",
+    "ghana": "Ghana",
+    "greece": "Greece",
+    "grenada": "Grenada",
+    "guatemala": "Guatemala",
+    "guinea": "Guinea",
+    "guinea-bissau": "Guinea-Bissau",
+    "guyana": "Guyana",
+    "haiti": "Haiti",
+    "honduras": "Honduras",
+    "hungary": "Hungary",
+    "iceland": "Iceland",
+    "india": "India",
+    "indonesia": "Indonesia",
+    "iran": "Iran",
+    "iraq": "Iraq",
+    "ireland": "Ireland",
+    "israel": "Israel",
+    "italy": "Italy",
+    "ivory-coast": "Côte d’Ivoire",
+    "jamaica": "Jamaica",
+    "japan": "Japan",
+    "jordan": "Jordan",
+    "kazakhstan": "Kazakhstan",
+    "kenya": "Kenya",
+    "kiribati": "Kiribati",
+    "kosovo": "Kosovo",
+    "kuwait": "Kuwait",
+    "kyrgyzstan": "Kyrgyzstan",
+    "laos": "Laos",
+    "latvia": "Latvia",
+    "lebanon": "Lebanon",
+    "lesotho": "Lesotho",
+    "liberia": "Liberia",
+    "libya": "Libya",
+    "liechtenstein": "Liechtenstein",
+    "lithuania": "Lithuania",
+    "luxembourg": "Luxembourg",
+    "madagascar": "Madagascar",
+    "malawi": "Malawi",
+    "malaysia": "Malaysia",
+    "maldives": "Maldives",
+    "mali": "Mali",
+    "malta": "Malta",
+    "marshall-islands": "Marshall Islands",
+    "mauritania": "Mauritania",
+    "mauritius": "Mauritius",
+    "mexico": "Mexico",
+    "micronesia": "Micronesia",
+    "moldova": "Moldova",
+    "monaco": "Monaco",
+    "mongolia": "Mongolia",
+    "montenegro": "Montenegro",
+    "morocco": "Morocco",
+    "mozambique": "Mozambique",
+    "myanmar": "Myanmar",
+    "namibia": "Namibia",
+    "nauru": "Nauru",
+    "nepal": "Nepal",
+    "netherlands": "The Netherlands",
+    "new-zealand": "New Zealand",
+    "nicaragua": "Nicaragua",
+    "niger": "Niger",
+    "nigeria": "Nigeria",
+    "north-korea": "North Korea",
+    "north-macedonia": "North Macedonia",
+    "northern-ireland": "Northern Ireland",
+    "norway": "Norway",
+    "oman": "Oman",
+    "pakistan": "Pakistan",
+    "palau": "Palau",
+    "palestine": "Palestine",
+    "panama": "Panama",
+    "papua-new-guinea": "Papua New Guinea",
+    "paraguay": "Paraguay",
+    "peru": "Peru",
+    "philippines": "The Philippines",
+    "poland": "Poland",
+    "portugal": "Portugal",
+    "qatar": "Qatar",
+    "republic-of-the-congo": "Republic of the Congo",
+    "romania": "Romania",
+    "russia": "Russia",
+    "rwanda": "Rwanda",
+    "saint-kitts-and-nevis": "Saint Kitts and Nevis",
+    "saint-lucia": "Saint Lucia",
+    "saint-vincent-and-the-grenadines": "Saint Vincent and the Grenadines",
+    "samoa": "Samoa",
+    "san-marino": "San Marino",
+    "sao-tome-and-principe": "São Tomé and Príncipe",
+    "saudi-arabia": "Saudi Arabia",
+    "senegal": "Senegal",
+    "serbia": "Serbia",
+    "seychelles": "Seychelles",
+    "sierra-leone": "Sierra Leone",
+    "singapore": "Singapore",
+    "slovakia": "Slovakia",
+    "slovenia": "Slovenia",
+    "solomon-islands": "Solomon Islands",
+    "somalia": "Somalia",
+    "south-africa": "South Africa",
+    "south-korea": "South Korea",
+    "south-sudan": "South Sudan",
+    "spain": "Spain",
+    "sri-lanka": "Sri Lanka",
+    "sudan": "Sudan",
+    "suriname": "Suriname",
+    "sweden": "Sweden",
+    "switzerland": "Switzerland",
+    "syria": "Syria",
+    "taiwan": "Taiwan",
+    "tajikistan": "Tajikistan",
+    "tanzania": "Tanzania",
+    "thailand": "Thailand",
+    "timor-leste": "Timor-Leste",
+    "togo": "Togo",
+    "tonga": "Tonga",
+    "trinidad-and-tobago": "Trinidad and Tobago",
+    "tunisia": "Tunisia",
+    "turkey": "Türkiye",
+    "turkiye": "Türkiye",
+    "turkmenistan": "Turkmenistan",
+    "tuvalu": "Tuvalu",
+    "uae": "UAE",
+    "uganda": "Uganda",
+    "uk": "UK",
+    "ukraine": "Ukraine",
+    "united-arab-emirates": "United Arab Emirates",
+    "united-kingdom": "United Kingdom",
+    "united-states": "United States",
+    "uruguay": "Uruguay",
+    "usa": "USA",
+    "uzbekistan": "Uzbekistan",
+    "vanuatu": "Vanuatu",
+    "vatican-city": "Vatican City",
+    "venezuela": "Venezuela",
+    "vietnam": "Vietnam",
+    "wales": "Wales",
+    "yemen": "Yemen",
+    "zambia": "Zambia",
+    "zimbabwe": "Zimbabwe",
+}
+
+COUNTRY_SUFFIXES = tuple(
+    sorted(
+        COUNTRY_SUFFIX_TITLES,
+        key=lambda value: (value.count("-"), len(value)),
+        reverse=True,
+    )
+)
 
 
 # -----------------------------
@@ -114,74 +326,12 @@ def month_title(month_id: str) -> str:
     return parsed.strftime("%B %Y")
 
 
-# These are aliases or constituent countries that ISO data alone does not
-# expose in the short folder-name form used by the journal.
-COUNTRY_TITLE_ALIASES: Dict[str, str] = {
-    "england": "England",
-    "northern-ireland": "Northern Ireland",
-    "scotland": "Scotland",
-    "turkey": "Türkiye",
-    "turkiye": "Türkiye",
-    "uae": "UAE",
-    "uk": "UK",
-    "usa": "USA",
-    "wales": "Wales",
-}
-
-
-def title_slug(value: str) -> str:
-    """
-    Convert a country name into the same lowercase-hyphen format used by
-    album folder names.
-
-    Example:
-        South Africa -> south-africa
-        Türkiye      -> turkiye
-    """
-    normalized = unicodedata.normalize("NFKD", value)
-    ascii_value = normalized.encode("ascii", "ignore").decode("ascii")
-    return re.sub(r"[^a-z0-9]+", "-", ascii_value.lower()).strip("-")
-
-
-def build_country_title_lookup() -> Dict[str, str]:
-    """
-    Build the country suffix lookup from pycountry's ISO 3166 data.
-
-    For each country, accept its standard, common and official names when
-    available. Prefer the common name for display, otherwise the ISO name.
-    """
-    lookup: Dict[str, str] = {}
-
-    for country in pycountry.countries:
-        display_title = getattr(country, "common_name", country.name)
-
-        source_names = {
-            country.name,
-            getattr(country, "common_name", ""),
-            getattr(country, "official_name", ""),
-        }
-
-        for source_name in source_names:
-            if source_name:
-                lookup[title_slug(source_name)] = display_title
-
-    lookup.update(COUNTRY_TITLE_ALIASES)
-    return lookup
-
-
-COUNTRY_SUFFIX_TITLES = build_country_title_lookup()
-COUNTRY_SUFFIXES = tuple(
-    sorted(
-        COUNTRY_SUFFIX_TITLES,
-        key=lambda value: (value.count("-"), len(value)),
-        reverse=True,
-    )
-)
-
-
 def humanize_slug(slug: str) -> str:
     """
     Convert a hyphenated slug into readable title text.
+
+    This function handles capitalization only. Geographic punctuation is
+    applied separately by slug_to_title().
     """
     words = slug.replace("_", "-").split("-")
     small_words = {"and", "or", "the", "of", "in", "on", "at", "to", "a"}
@@ -203,21 +353,22 @@ def humanize_slug(slug: str) -> str:
 
 def slug_to_title(slug: str) -> str:
     """
-    Generate an automatic title from an album folder slug.
+    Generate an automatic display title from an album folder slug.
 
-    A recognised country suffix receives the geographic comma:
+    When the slug ends with a recognised country or territory, insert the
+    geographic comma automatically:
 
         dublin-zoo-ireland       -> Dublin Zoo, Ireland
         cape-town-south-africa   -> Cape Town, South Africa
         lake-como-italy          -> Lake Como, Italy
         bodrum-turkiye           -> Bodrum, Türkiye
 
-    A country-only slug remains unchanged:
+    A slug that is only a country name remains unchanged:
 
         malta -> Malta
 
-    journal/titles.json still takes precedence for editorial exceptions,
-    such as:
+    journal/titles.json still takes precedence for editorial exceptions such as:
+
         kilkee-lahinch-ireland -> Kilkee and Lahinch, Ireland
     """
     normalized = slug.strip().lower().replace("_", "-")

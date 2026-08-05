@@ -4,8 +4,12 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>May 2026 — Lake Como, Italy — Achint Karak</title>
-  <meta name="description" content="A quiet photographic sequence from Lake Como, Italy, May 2026. 7 images by Achint Karak." />
-  <link rel="stylesheet" href="/styles.css" />
+  <meta
+    name="description"
+    content="A quiet photographic sequence from Lake Como, Italy, May 2026. 7 images by Achint Karak."
+  />
+  <link rel="stylesheet" href="/styles.css?v=93bc00ea53a6" />
+  <script src="/site.js?v=c2d221ebf5e3"></script>
 </head>
 <body>
   <main class="wrap">
@@ -21,7 +25,7 @@
       >⚙</button>
 
       <div class="menu" id="settingsMenu" aria-label="Settings menu" hidden>
-        <button class="menu-item" id="themeToggle" type="button">Light</button>
+        <button class="menu-item" id="themeToggle" type="button">Dark</button>
         <a class="menu-item" href="/about/">About</a>
       </div>
     </div>
@@ -37,165 +41,79 @@
     <header class="meta">
       <div class="date">May 2026</div>
       <div class="place">Lake Como, Italy</div>
-	  
-		<p class="album-description">Low clouds, wet paths and still water, where her presence became part of the lake’s quiet weather.</p>
+
+      <p class="album-description">Low clouds, wet paths and still water, where her presence became part of the lake’s quiet weather.</p>
     </header>
 
-      <figure class="frame">
-        <img
-          src="1.jpg"
-          alt="Lake Como, Italy — image 1"
-          loading="lazy"
-          decoding="async"
-        />
-      </figure>
-      <figure class="frame">
-        <img
-          src="2.jpg"
-          alt="Lake Como, Italy — image 2"
-          loading="lazy"
-          decoding="async"
-        />
-      </figure>
-      <figure class="frame">
-        <img
-          src="3.jpg"
-          alt="Lake Como, Italy — image 3"
-          loading="lazy"
-          decoding="async"
-        />
-      </figure>
-      <figure class="frame">
-        <img
-          src="4.jpg"
-          alt="Lake Como, Italy — image 4"
-          loading="lazy"
-          decoding="async"
-        />
-      </figure>
-      <figure class="frame">
-        <img
-          src="5.jpg"
-          alt="Lake Como, Italy — image 5"
-          loading="lazy"
-          decoding="async"
-        />
-      </figure>
-      <figure class="frame">
-        <img
-          src="6.jpg"
-          alt="Lake Como, Italy — image 6"
-          loading="lazy"
-          decoding="async"
-        />
-      </figure>
-      <figure class="frame">
-        <img
-          src="7.jpg"
-          alt="Lake Como, Italy — image 7"
-          loading="lazy"
-          decoding="async"
-        />
-      </figure>
+    <figure class="frame">
+      <img
+        src="1.jpg"
+        alt="Lake Como, Italy — image 1"
+        loading="lazy"
+        decoding="async"
+      />
+    </figure>
+    <figure class="frame">
+      <img
+        src="2.jpg"
+        alt="Lake Como, Italy — image 2"
+        loading="lazy"
+        decoding="async"
+      />
+    </figure>
+    <figure class="frame">
+      <img
+        src="3.jpg"
+        alt="Lake Como, Italy — image 3"
+        loading="lazy"
+        decoding="async"
+      />
+    </figure>
+    <figure class="frame">
+      <img
+        src="4.jpg"
+        alt="Lake Como, Italy — image 4"
+        loading="lazy"
+        decoding="async"
+      />
+    </figure>
+    <figure class="frame">
+      <img
+        src="5.jpg"
+        alt="Lake Como, Italy — image 5"
+        loading="lazy"
+        decoding="async"
+      />
+    </figure>
+    <figure class="frame">
+      <img
+        src="6.jpg"
+        alt="Lake Como, Italy — image 6"
+        loading="lazy"
+        decoding="async"
+      />
+    </figure>
+    <figure class="frame">
+      <img
+        src="7.jpg"
+        alt="Lake Como, Italy — image 7"
+        loading="lazy"
+        decoding="async"
+      />
+    </figure>
 
     <nav class="pills" aria-label="Album navigation">
-        <a class="btn" href="/journal/2026-04/cape-town-south-africa/">← Previous</a>
+      <a class="btn" href="/journal/2026-04/cape-town-south-africa/">← Previous</a>
 
       <a class="btn" href="/journal/2026-05/">Month</a>
       <a class="btn" href="/">Home</a>
 
-        <a class="btn" href="/journal/2026-07/wicklow-ireland/">Next →</a>
+      <a class="btn" href="/journal/2026-07/kilkee-lahinch-ireland/">Next →</a>
     </nav>
 
     <footer class="footer">
       © Achint Karak — Photo Journal
     </footer>
   </main>
-
-  <script>
-    (function () {
-      const THEME_KEY = "ak_theme";
-      const html = document.documentElement;
-      const themeBtn = document.getElementById("themeToggle");
-      const settingsToggle = document.getElementById("settingsToggle");
-      const settingsMenu = document.getElementById("settingsMenu");
-
-      function updateThemeButton(theme) {
-        if (themeBtn) {
-          themeBtn.textContent = theme === "dark" ? "Light" : "Dark";
-        }
-      }
-
-      function applyTheme(theme) {
-        html.setAttribute("data-theme", theme);
-        updateThemeButton(theme);
-        try { localStorage.setItem(THEME_KEY, theme); } catch (e) {}
-      }
-
-      let theme = "light";
-      try {
-        const saved = localStorage.getItem(THEME_KEY);
-        if (saved === "dark" || saved === "light") theme = saved;
-      } catch (e) {}
-
-      applyTheme(theme);
-
-      if (themeBtn) {
-        themeBtn.addEventListener("click", function (e) {
-          e.stopPropagation();
-          const current = html.getAttribute("data-theme") || "light";
-          applyTheme(current === "dark" ? "light" : "dark");
-        });
-      }
-
-      function openMenu() {
-        if (!settingsMenu || !settingsToggle) return;
-        settingsMenu.hidden = false;
-        settingsToggle.setAttribute("aria-expanded", "true");
-      }
-
-      function closeMenu() {
-        if (!settingsMenu || !settingsToggle) return;
-        settingsMenu.hidden = true;
-        settingsToggle.setAttribute("aria-expanded", "false");
-      }
-
-      function toggleMenu() {
-        if (!settingsMenu) return;
-        if (settingsMenu.hidden) openMenu();
-        else closeMenu();
-      }
-
-      if (settingsToggle) {
-        settingsToggle.addEventListener("click", function (e) {
-          e.stopPropagation();
-          toggleMenu();
-        });
-      }
-
-      if (settingsMenu) {
-        settingsMenu.addEventListener("click", function (e) {
-          e.stopPropagation();
-        });
-      }
-
-      document.addEventListener("click", function (e) {
-        if (
-          settingsMenu &&
-          settingsToggle &&
-          !settingsMenu.hidden &&
-          !e.target.closest(".settings")
-        ) {
-          closeMenu();
-        }
-      });
-
-      document.addEventListener("keydown", function (e) {
-        if (e.key === "Escape") {
-          closeMenu();
-        }
-      });
-    })();
-  </script>
 </body>
 </html>
