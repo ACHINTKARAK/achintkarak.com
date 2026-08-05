@@ -53,7 +53,7 @@
       <div class="browse-title">Journal Archive</div>
 
       {% for archive_year in archive_years %}
-      <details class="year" {% if loop.first %}open{% endif %}>
+      <details class="year">
         <summary class="year-btn">
           {{ archive_year.year }}
           <span class="chev" aria-hidden="true">▾</span>
