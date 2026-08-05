@@ -91,6 +91,48 @@ summary::-webkit-details-marker{
 }
 
 
+/* ---------- Top navigation ---------- */
+
+.top-nav{
+  position: absolute;
+  top: var(--padY);
+  right: var(--padX);
+  z-index: 50;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.top-link,
+.theme-toggle{
+  padding: 3px 0;
+}
+
+.top-link:hover{
+  color: var(--text);
+}
+
+.theme-toggle{
+  appearance: none;
+  -webkit-appearance: none;
+
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  line-height: 1;
+}
+
+.theme-toggle:hover,
+.theme-toggle:focus-visible{
+  color: var(--text);
+}
+
+
 /* ---------- Header ---------- */
 
 .meta{
@@ -154,17 +196,52 @@ summary::-webkit-details-marker{
 }
 
 
+/* ---------- Homepage feature ---------- */
+
+.home-feature{
+  width: 100%;
+  margin: 0 auto;
+}
+
+.home-feature a{
+  display: block;
+  width: max-content;
+  max-width: 94vw;
+  margin: 0 auto;
+}
+
+.home-feature a:hover{
+  text-decoration: none;
+}
+
+.home-feature img{
+  width: min(720px, 94vw);
+  height: auto;
+  display: block;
+  border: var(--border);
+  background: var(--bg);
+}
+
+
 /* ---------- Latest albums ---------- */
 
 .latest{
   max-width: 600px;
-  margin: 40px auto 0;
+  margin: 0 auto;
   padding-top: 28px;
   border-top: var(--border);
   text-align: center;
 
   display: grid;
   gap: 18px;
+}
+
+.kicker,
+.browse-title{
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 
 .latest-stack{
@@ -185,20 +262,13 @@ summary::-webkit-details-marker{
 .browse{
   width: 100%;
   max-width: 600px;
-  margin: 60px auto 0;
+  margin: 8px auto 0;
   padding-top: 22px;
   border-top: var(--border);
   text-align: center;
 
   display: grid;
   gap: 16px;
-}
-
-.browse-title{
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--muted);
 }
 
 
@@ -441,6 +511,10 @@ summary::-webkit-details-marker{
   margin: 0 0 22px;
 }
 
+.about .contact{
+  margin-top: 34px;
+}
+
 
 /* ---------- Footer ---------- */
 
@@ -454,86 +528,6 @@ summary::-webkit-details-marker{
 }
 
 
-/* ---------- Settings menu ---------- */
-
-.settings{
-  position: absolute;
-  top: var(--padY);
-  right: var(--padX);
-  z-index: 50;
-}
-
-.gear{
-  appearance: none;
-  -webkit-appearance: none;
-
-  width: 36px;
-  height: 32px;
-
-  border: 1px solid var(--hair);
-  border-radius: 999px;
-  background: transparent;
-  color: var(--muted);
-
-  cursor: pointer;
-  font-size: 15px;
-}
-
-.gear:hover,
-.gear[aria-expanded="true"]{
-  border-color: var(--text);
-  color: var(--text);
-}
-
-.menu{
-  position: absolute;
-  top: 44px;
-  right: 0;
-
-  min-width: 140px;
-  padding: 10px;
-
-  border: 1px solid var(--hair);
-  border-radius: 14px;
-  background: var(--bg);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-
-  display: grid;
-  gap: 8px;
-}
-
-.menu[hidden]{
-  display: none !important;
-}
-
-.menu-item{
-  appearance: none;
-  -webkit-appearance: none;
-
-  display: block;
-  width: auto;
-  padding: 8px 10px;
-
-  border: 1px solid var(--hair);
-  border-radius: 10px;
-  background: transparent;
-
-  color: var(--muted);
-  cursor: pointer;
-  font: inherit;
-  font-size: 13px;
-  line-height: 1.3;
-  text-align: left;
-  text-decoration: none;
-}
-
-.menu-item:hover{
-  border-color: var(--text);
-  color: var(--text);
-  background: var(--card);
-}
-
-
 /* ---------- Mobile ---------- */
 
 @media (max-width: 520px){
@@ -541,6 +535,10 @@ summary::-webkit-details-marker{
     --padY: 56px;
     --padX: 18px;
     --gap: 42px;
+  }
+
+  .top-nav{
+    gap: 12px;
   }
 
   .latest-item{
@@ -555,4 +553,17 @@ summary::-webkit-details-marker{
   .month-albums{
     gap: 9px;
   }
+}
+
+
+/* Homepage discovery source */
+.home-feature-source {
+  width: 100%;
+  max-width: 720px;
+  margin: 0.7rem auto 0;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  letter-spacing: 0.015em;
+  text-align: left;
+  opacity: 0.62;
 }

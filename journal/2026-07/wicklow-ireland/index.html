@@ -2,33 +2,63 @@
 <html lang="en" data-theme="light">
 <head>
   <meta charset="utf-8" />
+
+  <script>
+    (function () {
+      try {
+        var savedTheme = localStorage.getItem("ak_theme");
+
+        if (savedTheme === "dark" || savedTheme === "light") {
+          document.documentElement.setAttribute(
+            "data-theme",
+            savedTheme
+          );
+        }
+      } catch (error) {
+        // Continue with the default light theme.
+      }
+    }());
+  </script>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>July 2026 — Wicklow, Ireland — Achint Karak</title>
   <meta
     name="description"
-    content="A quiet photographic sequence from Wicklow, Ireland, July 2026. 7 images by Achint Karak."
+    content="Sunny summer afternoon picnic - Best use of the weather"
   />
-  <link rel="stylesheet" href="/styles.css?v=93bc00ea53a6" />
-  <script src="/site.js?v=c2d221ebf5e3"></script>
+  <link rel="canonical" href="https://achintkarak.com/journal/2026-07/wicklow-ireland/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Achint Karak — Photo Journal" />
+  <meta
+    property="og:title"
+    content="Wicklow, Ireland — July 2026"
+  />
+  <meta
+    property="og:description"
+    content="Sunny summer afternoon picnic - Best use of the weather"
+  />
+  <meta property="og:url" content="https://achintkarak.com/journal/2026-07/wicklow-ireland/" />
+  <meta property="og:image" content="https://achintkarak.com/journal/2026-07/wicklow-ireland/1.jpg" />
+  <meta
+    property="og:image:alt"
+    content="Wicklow, Ireland — selected sharing photograph"
+  />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="stylesheet" href="/styles.css?v=30fca54ae4c7" />
+  <script src="/site.js?v=0702efae8f19"></script>
 </head>
 <body>
   <main class="wrap">
 
-    <div class="settings">
+    <nav class="top-nav" aria-label="Primary navigation">
+      <a class="top-link" href="/about/">About</a>
       <button
-        class="gear"
-        id="settingsToggle"
+        class="theme-toggle"
+        id="themeToggle"
         type="button"
-        aria-label="Settings"
-        aria-expanded="false"
-        aria-controls="settingsMenu"
-      >⚙</button>
-
-      <div class="menu" id="settingsMenu" aria-label="Settings menu" hidden>
-        <button class="menu-item" id="themeToggle" type="button">Dark</button>
-        <a class="menu-item" href="/about/">About</a>
-      </div>
-    </div>
+        aria-label="Use dark theme"
+        title="Use dark theme"
+      >◐</button>
+    </nav>
 
     <nav class="crumbs">
       <a href="/">Home</a>
@@ -48,15 +78,16 @@
     <figure class="frame">
       <img
         src="1.jpg"
-        alt="Wicklow, Ireland — image 1"
-        loading="lazy"
+        alt="Wicklow, Ireland — photograph 1 of 7"
+        loading="eager"
+        fetchpriority="high"
         decoding="async"
       />
     </figure>
     <figure class="frame">
       <img
         src="2.jpg"
-        alt="Wicklow, Ireland — image 2"
+        alt="Wicklow, Ireland — photograph 2 of 7"
         loading="lazy"
         decoding="async"
       />
@@ -64,7 +95,7 @@
     <figure class="frame">
       <img
         src="3.jpg"
-        alt="Wicklow, Ireland — image 3"
+        alt="Wicklow, Ireland — photograph 3 of 7"
         loading="lazy"
         decoding="async"
       />
@@ -72,7 +103,7 @@
     <figure class="frame">
       <img
         src="4.jpg"
-        alt="Wicklow, Ireland — image 4"
+        alt="Wicklow, Ireland — photograph 4 of 7"
         loading="lazy"
         decoding="async"
       />
@@ -80,7 +111,7 @@
     <figure class="frame">
       <img
         src="5.jpg"
-        alt="Wicklow, Ireland — image 5"
+        alt="Wicklow, Ireland — photograph 5 of 7"
         loading="lazy"
         decoding="async"
       />
@@ -88,7 +119,7 @@
     <figure class="frame">
       <img
         src="6.jpg"
-        alt="Wicklow, Ireland — image 6"
+        alt="Wicklow, Ireland — photograph 6 of 7"
         loading="lazy"
         decoding="async"
       />
@@ -96,7 +127,7 @@
     <figure class="frame">
       <img
         src="7.jpg"
-        alt="Wicklow, Ireland — image 7"
+        alt="Wicklow, Ireland — photograph 7 of 7"
         loading="lazy"
         decoding="async"
       />
@@ -112,7 +143,7 @@
     </nav>
 
     <footer class="footer">
-      © Achint Karak — Photo Journal
+      © Achint Karak
     </footer>
   </main>
 </body>

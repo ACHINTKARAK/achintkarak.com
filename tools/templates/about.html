@@ -2,33 +2,54 @@
 <html lang="en" data-theme="light">
 <head>
   <meta charset="utf-8" />
+
+  <script>
+    (function () {
+      try {
+        var savedTheme = localStorage.getItem("ak_theme");
+
+        if (savedTheme === "dark" || savedTheme === "light") {
+          document.documentElement.setAttribute(
+            "data-theme",
+            savedTheme
+          );
+        }
+      } catch (error) {
+        // Continue with the default light theme.
+      }
+    }());
+  </script>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>About — Achint Karak</title>
   <meta
     name="description"
     content="About Achint Karak and his quiet photographic journal."
   />
+  <link rel="canonical" href="{{ site_url }}/about/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Achint Karak — Photo Journal" />
+  <meta property="og:title" content="About — Achint Karak" />
+  <meta
+    property="og:description"
+    content="About Achint Karak and his quiet photographic journal."
+  />
+  <meta property="og:url" content="{{ site_url }}/about/" />
   <link rel="stylesheet" href="/styles.css?v={{ css_version }}" />
   <script src="/site.js?v={{ js_version }}"></script>
 </head>
 <body>
   <main class="wrap about-page">
 
-    <div class="settings">
+    <nav class="top-nav" aria-label="Primary navigation">
+      <a class="top-link" href="/">Home</a>
       <button
-        class="gear"
-        id="settingsToggle"
+        class="theme-toggle"
+        id="themeToggle"
         type="button"
-        aria-label="Settings"
-        aria-expanded="false"
-        aria-controls="settingsMenu"
-      >⚙</button>
-
-      <div class="menu" id="settingsMenu" aria-label="Settings menu" hidden>
-        <button class="menu-item" id="themeToggle" type="button">Dark</button>
-        <a class="menu-item" href="/">Home</a>
-      </div>
-    </div>
+        aria-label="Use dark theme"
+        title="Use dark theme"
+      >◐</button>
+    </nav>
 
     <header class="meta">
       <div class="date">About</div>
@@ -36,11 +57,21 @@
 
     <section class="about">
       <p>
-        A long-term photo journal by Achint Karak.
-        It began as a way to capture moments as they pass.
+        This is my long-term journal of places, distance and human presence.
       </p>
 
       <p>
+        I am drawn to quiet moments: figures seen through structures,
+        relationships held within space, and scenes that might otherwise
+        pass without attention.
+      </p>
+
+      <p>
+        Each entry is a carefully selected sequence of seven photographs,
+        offering an impression of a place rather than a complete record of it.
+      </p>
+
+      <p class="contact">
         For correspondence:
         <br />
         <a href="mailto:journal@achintkarak.com">
@@ -54,7 +85,7 @@
     </nav>
 
     <footer class="footer">
-      © Achint Karak — Photo Journal
+      © Achint Karak
     </footer>
   </main>
 </body>

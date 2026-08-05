@@ -2,33 +2,54 @@
 <html lang="en" data-theme="light">
 <head>
   <meta charset="utf-8" />
+
+  <script>
+    (function () {
+      try {
+        var savedTheme = localStorage.getItem("ak_theme");
+
+        if (savedTheme === "dark" || savedTheme === "light") {
+          document.documentElement.setAttribute(
+            "data-theme",
+            savedTheme
+          );
+        }
+      } catch (error) {
+        // Continue with the default light theme.
+      }
+    }());
+  </script>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>August 2026 — Achint Karak</title>
   <meta
     name="description"
     content="Index for August 2026 — Achint Karak’s photo journal."
   />
-  <link rel="stylesheet" href="/styles.css?v=93bc00ea53a6" />
-  <script src="/site.js?v=c2d221ebf5e3"></script>
+  <link rel="canonical" href="https://achintkarak.com/journal/2026-08/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Achint Karak — Photo Journal" />
+  <meta property="og:title" content="August 2026 — Achint Karak" />
+  <meta
+    property="og:description"
+    content="Index for August 2026 — Achint Karak’s photo journal."
+  />
+  <meta property="og:url" content="https://achintkarak.com/journal/2026-08/" />
+  <link rel="stylesheet" href="/styles.css?v=30fca54ae4c7" />
+  <script src="/site.js?v=0702efae8f19"></script>
 </head>
 <body>
   <main class="wrap month-page">
 
-    <div class="settings">
+    <nav class="top-nav" aria-label="Primary navigation">
+      <a class="top-link" href="/about/">About</a>
       <button
-        class="gear"
-        id="settingsToggle"
+        class="theme-toggle"
+        id="themeToggle"
         type="button"
-        aria-label="Settings"
-        aria-expanded="false"
-        aria-controls="settingsMenu"
-      >⚙</button>
-
-      <div class="menu" id="settingsMenu" aria-label="Settings menu" hidden>
-        <button class="menu-item" id="themeToggle" type="button">Dark</button>
-        <a class="menu-item" href="/about/">About</a>
-      </div>
-    </div>
+        aria-label="Use dark theme"
+        title="Use dark theme"
+      >◐</button>
+    </nav>
 
     <nav class="crumbs">
       <a href="/">Home</a>
@@ -49,7 +70,7 @@
     </div>
 
     <footer class="footer">
-      © Achint Karak — Photo Journal
+      © Achint Karak
     </footer>
   </main>
 </body>

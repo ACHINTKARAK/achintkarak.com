@@ -58,6 +58,7 @@ RE_CANONICAL_SLUG = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 EXPECTED_IMAGE_COUNT = 7
 LATEST_ALBUM_COUNT = 3
 ORDER_SCHEMA_VERSION = 1
+SITE_URL = "https://achintkarak.com"
 
 
 # -----------------------------
@@ -447,6 +448,215 @@ def confirm_image_count(
 
 
 # -----------------------------
+# Homepage and sharing images
+# -----------------------------
+def image_filename(album: Album, number: int) -> str:
+    return f"{number}.{album.image_ext}"
+
+
+def parse_image_selection(
+    value: str,
+    album: Album,
+    source_name: str,
+) -> str:
+    cleaned = value.strip().lower()
+
+    if cleaned.isdigit():
+        number = int(cleaned)
+    else:
+        match = RE_IMAGE.fullmatch(cleaned)
+
+        if not match:
+            raise ValueError(
+                f"{source_name} must contain an image number or filename, "
+                f"such as 4 or 4.{album.image_ext}."
+            )
+
+        number = int(match.group(1))
+        extension = match.group(2).lower()
+
+        if extension != album.image_ext.lower():
+            raise ValueError(
+                f"{source_name} refers to '.{extension}', but this album "
+                f"uses '.{album.image_ext}'."
+            )
+
+    if number < 1 or number > album.image_count:
+        raise ValueError(
+            f"{source_name} must select an image from 1 to "
+            f"{album.image_count}."
+        )
+
+    return image_filename(album, number)
+
+
+def read_image_selection(
+    album_dir: Path,
+    album: Album,
+    selection_name: str,
+) -> str | None:
+    selection_path = album_dir / selection_name
+
+    if not selection_path.exists():
+        return None
+
+    return parse_image_selection(
+        selection_path.read_text(encoding="utf-8-sig"),
+        album,
+        str(selection_path),
+    )
+
+
+def write_image_selection(
+    selection_path: Path,
+    filename: str,
+) -> None:
+    selection_path.write_text(
+        filename + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+
+
+def prompt_image_selection(
+    album: Album,
+    purpose: str,
+    default_number: int = 1,
+) -> str:
+    while True:
+        answer = input(
+            f"  Choose {purpose} image [1-{album.image_count}] "
+            f"(Enter = {default_number}): "
+        ).strip()
+
+        if not answer:
+            answer = str(default_number)
+
+        try:
+            return parse_image_selection(
+                answer,
+                album,
+                f"{purpose} selection",
+            )
+        except ValueError as exc:
+            print(f"  {exc}")
+
+
+def ensure_latest_image_choices(
+    root: Path,
+    album: Album,
+    interactive: bool,
+) -> Tuple[str, str]:
+    album_dir = root / album.rel_dir
+    home_path = album_dir / "home-image.txt"
+    share_path = album_dir / "share-image.txt"
+
+    home_image = read_image_selection(
+        album_dir,
+        album,
+        "home-image.txt",
+    )
+    prompted_for_home = False
+
+    if home_image is None:
+        if interactive:
+            print(f"\nNewest album: {album.title}")
+            home_image = prompt_image_selection(
+                album,
+                "homepage",
+            )
+            write_image_selection(home_path, home_image)
+            prompted_for_home = True
+            print(
+                "  ✅ Wrote: "
+                f"{home_path.relative_to(root)} -> {home_image}"
+            )
+        else:
+            home_image = image_filename(album, 1)
+            print(
+                "⚠ Missing home-image.txt for the newest album. "
+                f"Using {home_image} for this non-interactive build."
+            )
+
+    share_image = read_image_selection(
+        album_dir,
+        album,
+        "share-image.txt",
+    )
+
+    if share_image is not None:
+        if share_image == home_image:
+            share_path.unlink()
+            share_image = home_image
+            print(
+                "  Removed redundant share-image.txt because it "
+                "matched home-image.txt."
+            )
+
+        return home_image, share_image
+
+    if prompted_for_home and interactive:
+        answer = input(
+            f"  Use {home_image} as the sharing image too? [Y/n]: "
+        ).strip().lower()
+
+        if answer in {"n", "no"}:
+            share_image = prompt_image_selection(
+                album,
+                "sharing",
+            )
+
+            if share_image != home_image:
+                write_image_selection(share_path, share_image)
+                print(
+                    "  ✅ Wrote: "
+                    f"{share_path.relative_to(root)} -> {share_image}"
+                )
+            else:
+                share_image = home_image
+        else:
+            share_image = home_image
+    else:
+        share_image = home_image
+
+    return home_image, share_image
+
+
+def resolve_album_share_image(
+    root: Path,
+    album: Album,
+) -> str:
+    album_dir = root / album.rel_dir
+
+    share_image = read_image_selection(
+        album_dir,
+        album,
+        "share-image.txt",
+    )
+
+    if share_image is not None:
+        return share_image
+
+    home_image = read_image_selection(
+        album_dir,
+        album,
+        "home-image.txt",
+    )
+
+    if home_image is not None:
+        return home_image
+
+    return image_filename(album, 1)
+
+
+def absolute_album_image_url(
+    album: Album,
+    filename: str,
+) -> str:
+    return f"{SITE_URL}{album.url}{filename}"
+
+
+# -----------------------------
 # Automatic stable album order
 # -----------------------------
 def parse_created_at(value: Any) -> float | None:
@@ -769,6 +979,12 @@ def render_all(
     js_version = asset_version(root / "site.js")
 
     latest_albums = tuple(albums[:LATEST_ALBUM_COUNT])
+    featured_album = latest_albums[0]
+    home_image, featured_share_image = ensure_latest_image_choices(
+        root,
+        featured_album,
+        interactive,
+    )
     archive_months = build_archive_months(
         months,
         latest_albums,
@@ -792,11 +1008,19 @@ def render_all(
     outputs[root / "index.html"] = home_template.render(
         latest_albums=latest_albums,
         archive_years=archive_years,
+        featured_album=featured_album,
+        home_image=home_image,
+        featured_share_image_url=absolute_album_image_url(
+            featured_album,
+            featured_share_image,
+        ),
+        site_url=SITE_URL,
         css_version=css_version,
         js_version=js_version,
     )
 
     outputs[root / "about" / "index.html"] = about_template.render(
+        site_url=SITE_URL,
         css_version=css_version,
         js_version=js_version,
     )
@@ -804,6 +1028,7 @@ def render_all(
     for month in months:
         outputs[root / month.rel_dir / "index.html"] = month_template.render(
             month=month,
+            site_url=SITE_URL,
             css_version=css_version,
             js_version=js_version,
         )
@@ -827,11 +1052,30 @@ def render_all(
             else None
         )
 
+        album_month_title = month_title(album.month_id)
+        share_image = resolve_album_share_image(root, album)
+        canonical_url = f"{SITE_URL}{album.url}"
+        meta_description = (
+            album.description
+            if album.description
+            else (
+                f"A quiet photographic sequence from {album.title}, "
+                f"{album_month_title}. {album.image_count} photographs "
+                "by Achint Karak."
+            )
+        )
+
         outputs[root / album.rel_dir / "index.html"] = album_template.render(
             album=album,
-            month_title=month_title(album.month_id),
+            month_title=album_month_title,
             prev_album=older_album,
             next_album=newer_album,
+            canonical_url=canonical_url,
+            share_image_url=absolute_album_image_url(
+                album,
+                share_image,
+            ),
+            meta_description=meta_description,
             css_version=css_version,
             js_version=js_version,
         )
