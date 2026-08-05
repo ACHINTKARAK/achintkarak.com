@@ -538,6 +538,8 @@ summary::-webkit-details-marker{
   }
 
   .top-nav{
+    top: 20px;
+    right: var(--padX);
     gap: 12px;
   }
 
