@@ -1,6 +1,8 @@
 (function () {
   "use strict";
 
+  document.documentElement.classList.add("js");
+
   const THEME_KEY = "ak_theme";
   const DISCOVERY_QUEUE_KEY = "ak_discovery_queue_v1";
   const DISCOVERY_LAST_ALBUM_KEY = "ak_discovery_last_album_v1";
@@ -243,6 +245,12 @@
       return;
     }
 
+    function revealFeatureImage() {
+      requestAnimationFrame(function () {
+        featureImage.classList.add("is-ready");
+      });
+    }
+
     try {
       const response = await fetch(
         "/journal/journal.json",
@@ -276,6 +284,7 @@
       }
 
       if (albums.length === 0) {
+        revealFeatureImage();
         return;
       }
 
@@ -317,12 +326,15 @@
         album.monthTitle;
 
       featureSource.hidden = false;
+      revealFeatureImage();
     } catch (error) {
       console.warn(
         "The discovery image could not be loaded. " +
         "Using the selected fallback image.",
         error
       );
+
+      revealFeatureImage();
     }
   }
 

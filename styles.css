@@ -569,3 +569,20 @@ summary::-webkit-details-marker{
   text-align: left;
   opacity: 0.62;
 }
+
+
+/* Homepage discovery loading */
+.js #homeFeatureImage {
+  opacity: 0;
+}
+
+.js #homeFeatureImage.is-ready {
+  opacity: 1;
+  transition: opacity 140ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js #homeFeatureImage.is-ready {
+    transition: none;
+  }
+}
