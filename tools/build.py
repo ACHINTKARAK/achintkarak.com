@@ -657,6 +657,57 @@ def absolute_album_image_url(
 
 
 # -----------------------------
+# Optional descriptive image alt text
+# -----------------------------
+def load_image_alts(album_dir: Path, image_count: int) -> Dict[int, str]:
+    """
+    Optional album-local alt.json maps image numbers to factual descriptions.
+
+    Example:
+        {"1": "A lone walker passes through a stone archway."}
+
+    Missing entries keep the original numbered-photo fallback. Nothing here
+    adds visible captions or modifies image files.
+    """
+    path = album_dir / "alt.json"
+
+    if not path.exists():
+        return {}
+
+    try:
+        data = json.loads(path.read_text(encoding="utf-8-sig"))
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"Invalid JSON in {path}: {exc}") from exc
+
+    if not isinstance(data, dict):
+        raise ValueError(f"{path} must be a JSON object of image number -> alt text.")
+
+    result: Dict[int, str] = {}
+    for key, value in data.items():
+        if not isinstance(key, str) or not key.isdigit():
+            raise ValueError(f"{path}: image keys must be strings like '1' or '7'.")
+
+        number = int(key)
+        if str(number) != key or not 1 <= number <= image_count:
+            raise ValueError(
+                f"{path}: image key '{key}' must be between 1 and {image_count}."
+            )
+
+        if not isinstance(value, str):
+            raise ValueError(f"{path}: alt text for image {key} must be a string.")
+
+        cleaned = " ".join(value.split())
+        if not cleaned:
+            continue  # Draft placeholders may be blank while descriptions are written.
+        if len(cleaned) > 300:
+            raise ValueError(f"{path}: image {key} alt text exceeds 300 characters.")
+
+        result[number] = cleaned
+
+    return result
+
+
+# -----------------------------
 # Automatic stable album order
 # -----------------------------
 def parse_created_at(value: Any) -> float | None:
@@ -885,7 +936,7 @@ def make_environment(root: Path) -> Environment:
     )
 
 
-def build_manifest(months: Sequence[Month]) -> Dict[str, Any]:
+def build_manifest(months: Sequence[Month], root: Path) -> Dict[str, Any]:
     return {
         "schema_version": ORDER_SCHEMA_VERSION,
         "months": [
@@ -901,6 +952,16 @@ def build_manifest(months: Sequence[Month]) -> Dict[str, Any]:
                         "ext": album.image_ext,
                         "url": album.url,
                         "created_at": album.created_at,
+                        **(
+                            {"alts": {
+                                str(number): description
+                                for number, description in load_image_alts(
+                                    root / album.rel_dir, album.image_count
+                                ).items()
+                            }}
+                            if load_image_alts(root / album.rel_dir, album.image_count)
+                            else {}
+                        ),
                     }
                     for album in month.albums
                 ],
@@ -1000,7 +1061,7 @@ def render_all(
     outputs: Dict[Path, str] = {}
 
     outputs[root / "journal" / "journal.json"] = json.dumps(
-        build_manifest(months),
+        build_manifest(months, root),
         indent=2,
         ensure_ascii=False,
     ) + "\n"
@@ -1067,6 +1128,7 @@ def render_all(
 
         outputs[root / album.rel_dir / "index.html"] = album_template.render(
             album=album,
+            image_alts=load_image_alts(root / album.rel_dir, album.image_count),
             month_title=album_month_title,
             prev_album=older_album,
             next_album=newer_album,
