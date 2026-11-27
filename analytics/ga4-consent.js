@@ -6,25 +6,53 @@
   "use strict";
 
   const MEASUREMENT_ID = "G-KYQZZZVGXB";
-  const CONSENT_KEY = "ak_analytics_consent_v1";
+  // Privacy decisions are kept in the visitor's browser, never in the repo.
+  // Change this version only if the purposes or recipients materially change.
+  const CONSENT_KEY = "ak_privacy_choices_v2";
+  const POLICY_VERSION = 2;
+  const MAX_CONSENT_AGE_MS = 180 * 24 * 60 * 60 * 1000;
+  // Reserved for a future, independently consented advertising integration.
+  // Google advertising consent always stays DENIED in this analytics-only build.
+  const ADVERTISING_ACTIVE = false;
   const GOOGLE_TAG_URL = "https://www.googletagmanager.com/gtag/js?id=";
   let tagStarted = false;
 
   function preference() {
     try {
-      const saved = localStorage.getItem(CONSENT_KEY);
-      return saved === "accepted" || saved === "declined" ? saved : null;
+      const raw = localStorage.getItem(CONSENT_KEY);
+      if (!raw) return null;
+      const saved = JSON.parse(raw);
+      if (!saved || saved.version !== POLICY_VERSION ||
+          typeof saved.analytics !== "boolean" ||
+          !Number.isFinite(saved.timestamp) ||
+          saved.timestamp > Date.now() ||
+          Date.now() - saved.timestamp > MAX_CONSENT_AGE_MS) {
+        return null;
+      }
+      return saved;
     } catch (error) {
+      // If storage is disabled, we ask rather than assume consent.
       return null;
     }
   }
 
-  function savePreference(value) {
+  function savePreference(analytics) {
     try {
-      localStorage.setItem(CONSENT_KEY, value);
+      localStorage.setItem(CONSENT_KEY, JSON.stringify({
+        version: POLICY_VERSION,
+        analytics: analytics === true,
+        advertising: false, // No ad tracking is in use.
+        timestamp: Date.now()
+      }));
     } catch (error) {
-      // A blocked storage API must never interrupt the journal.
+      // Storage disabled: the site still works; analytics won't be enabled
+      // unless the visitor has explicitly opted in in this session.
     }
+  }
+
+  function hasAnalyticsConsent() {
+    const saved = preference();
+    return !!(saved && saved.analytics === true);
   }
 
   function cleanPageUrl() {
@@ -92,116 +120,206 @@
   function createUI() {
     const css = document.createElement("style");
     css.textContent = [
-      "#ak-analytics-panel[hidden] { display: none !important; }",
+      "#ak-analytics-panel[hidden], #ak-analytics-details[hidden] {",
+      "  display: none !important;",
+      "}",
       "#ak-analytics-panel {",
-      "  position: fixed; z-index: 9999; bottom: 1rem; left: 1rem; right: 1rem;",
-      "  max-width: 560px; margin: 0 auto; padding: 1rem 1.15rem;",
-      "  color: var(--text, #222); background: var(--bg, #fff);",
-      "  border: 1px solid currentColor; box-shadow: 0 3px 20px #0002;",
-      "  font: inherit; line-height: 1.5;",
+      "  position: fixed; z-index: 9999; bottom: 1rem;",
+      "  left: 1rem; right: 1rem; width: auto; max-width: 610px;",
+      "  margin: 0 auto; padding: 1.15rem 1.35rem;",
+      "  color: var(--text, #161616); background: var(--bg, #fff);",
+      "  border: 1px solid var(--hair, #777);",
+      "  box-shadow: 0 4px 26px #0002; font: inherit; line-height: 1.55;",
+      "  max-height: min(85vh, 680px); overflow-y: auto;",
       "}",
       "#ak-analytics-panel h2 {",
-      "  margin: 0 0 .45rem; color: inherit; font: inherit;",
-      "  font-size: 1rem; font-weight: 600; letter-spacing: .01em;",
+      "  color: inherit; font: inherit; font-size: 1.05rem;",
+      "  font-weight: 600; margin: 0 0 .45rem;",
       "}",
-      "#ak-analytics-panel p { margin: 0 0 .8rem; font-size: .88rem; }",
+      "#ak-analytics-panel p { margin: 0 0 .75rem; font-size: .88rem; }",
       "#ak-analytics-panel a { color: inherit; text-decoration: underline; }",
-      "#ak-analytics-choices { display: flex; flex-wrap: wrap; gap: .65rem; }",
-      "#ak-analytics-choices button {",
-      "  font: inherit; color: inherit; background: transparent;",
-      "  border: 1px solid currentColor; border-radius: 2px;",
-      "  padding: .4rem .8rem; cursor: pointer; flex: 1 1 180px;",
+      "#ak-analytics-actions {",
+      "  display: flex; flex-wrap: wrap; gap: .55rem; margin-top: .9rem;",
       "}",
-      "#ak-analytics-choices button:focus-visible,",
+      "#ak-analytics-actions button, #ak-analytics-save {",
+      "  flex: 1 1 155px; padding: .5rem .65rem; cursor: pointer;",
+      "  font: inherit; font-size: .82rem; line-height: 1.5;",
+      "  color: inherit; background: transparent;",
+      "  border: 1px solid var(--text, #161616); border-radius: 2px;",
+      "}",
+      "#ak-analytics-panel button:hover { background: var(--card, #eee); }",
+      "#ak-analytics-panel button:focus-visible,",
       "#ak-analytics-preferences:focus-visible {",
       "  outline: 2px solid currentColor; outline-offset: 3px;",
       "}",
+      "#ak-analytics-details {",
+      "  margin-top: .95rem; padding-top: .85rem;",
+      "  border-top: 1px solid var(--hair, #777);",
+      "}",
+      "#ak-analytics-details .ak-choice {",
+      "  display: flex; gap: .6rem; align-items: flex-start;",
+      "  padding: .5rem 0; font-size: .88rem;",
+      "}",
+      "#ak-analytics-details .ak-choice input { margin-top: .3rem; }",
+      "#ak-analytics-details .ak-choice strong { display: block; }",
+      "#ak-analytics-details .ak-choice small {",
+      "  display: block; color: var(--muted, #777); font-size: .78rem;",
+      "}",
+      "#ak-analytics-save { display: block; width: 100%; margin-top: .75rem; }",
       "#ak-analytics-preferences {",
       "  display: block; margin: .6rem auto 0; padding: .15rem;",
       "  color: inherit; background: transparent; border: 0; cursor: pointer;",
-      "  font: inherit; font-size: .78rem; opacity: .8; text-decoration: underline;",
+      "  font: inherit; font-size: .78rem; opacity: .8;",
+      "  text-decoration: underline;",
       "}"
     ].join("\n");
     document.head.appendChild(css);
 
     const footer = document.querySelector("footer");
-    let panel;
+    const panel = document.createElement("section");
+    panel.id = "ak-analytics-panel";
+    panel.setAttribute("role", "region");
+    panel.setAttribute("aria-labelledby", "ak-privacy-title");
+
+    const heading = document.createElement("h2");
+    heading.id = "ak-privacy-title";
+    heading.textContent = "A note on privacy";
+    panel.appendChild(heading);
+
+    const description = document.createElement("p");
+    description.textContent =
+      "This journal works without tracking. With your permission, " +
+      "Google Analytics helps me understand which pages and photo albums " +
+      "people explore, so I can improve and share the journal. " +
+      "You can accept, reject or manage optional uses.";
+    panel.appendChild(description);
+
+    const detailsLink = document.createElement("a");
+    detailsLink.href = "/about/";
+    detailsLink.textContent = "Privacy details";
+    panel.appendChild(detailsLink);
+
+    const actions = document.createElement("div");
+    actions.id = "ak-analytics-actions";
+
+    function button(label) {
+      const element = document.createElement("button");
+      element.type = "button";
+      element.textContent = label;
+      actions.appendChild(element);
+      return element;
+    }
+
+    const allow = button("Accept analytics");
+    const reject = button("Reject optional");
+    const manage = button("Manage choices");
+    panel.appendChild(actions);
+
+    const details = document.createElement("div");
+    details.id = "ak-analytics-details";
+    details.hidden = true;
+
+    function category(title, descriptionText, selectable) {
+      const row = document.createElement("label");
+      row.className = "ak-choice";
+      const field = document.createElement("input");
+      field.type = "checkbox";
+      field.checked = false; // Optional processing is never preselected.
+      field.disabled = !selectable;
+      const content = document.createElement("span");
+      const name = document.createElement("strong");
+      name.textContent = title;
+      const explanation = document.createElement("small");
+      explanation.textContent = descriptionText;
+      content.appendChild(name);
+      content.appendChild(explanation);
+      row.appendChild(field);
+      row.appendChild(content);
+      details.appendChild(row);
+      return field;
+    }
+
+    const essential = category(
+      "Essential — always active",
+      "Keeps basic website functionality and remembers your privacy choice.",
+      false
+    );
+    essential.checked = true;
+
+    const analytics = category(
+      "Audience analytics — optional",
+      "Google Analytics measures visited pages and album-link clicks. " +
+      "Google may process standard technical information; see Privacy details.",
+      true
+    );
+
+    category(
+      "Advertising and personalisation — not used",
+      ADVERTISING_ACTIVE
+        ? "Will require its own informed consent before any advertising code runs."
+        : "No advertising tracking is active. If introduced, you will be " +
+          "asked separately before it starts.",
+      false
+    );
+
+    const save = document.createElement("button");
+    save.type = "button";
+    save.id = "ak-analytics-save";
+    save.textContent = "Save my choices";
+    details.appendChild(save);
+    panel.appendChild(details);
+
+    function showPreferences() {
+      const current = preference();
+      analytics.checked = !!(current && current.analytics);
+      details.hidden = false;
+      manage.setAttribute("aria-expanded", "true");
+      analytics.focus();
+    }
+
+    function applyChoice(analyticsAllowed) {
+      const wasEnabled = tagStarted;
+      savePreference(analyticsAllowed);
+      panel.hidden = true;
+      if (analyticsAllowed) {
+        window["ga-disable-" + MEASUREMENT_ID] = false;
+        enableAnalytics();
+      } else {
+        window["ga-disable-" + MEASUREMENT_ID] = true;
+        if (typeof window.gtag === "function") {
+          window.gtag("consent", "update", { analytics_storage: "denied" });
+        }
+        clearAnalyticsCookies();
+        // A running Google script cannot be reliably unloaded without reload.
+        if (wasEnabled) location.reload();
+      }
+    }
+
+    allow.addEventListener("click", function () { applyChoice(true); });
+    reject.addEventListener("click", function () { applyChoice(false); });
+    manage.addEventListener("click", showPreferences);
+    save.addEventListener("click", function () {
+      applyChoice(analytics.checked === true);
+    });
+
+    document.body.appendChild(panel);
+    panel.hidden = preference() !== null;
 
     if (footer) {
       const preferences = document.createElement("button");
       preferences.id = "ak-analytics-preferences";
       preferences.type = "button";
-      preferences.textContent = "Analytics preferences";
+      preferences.textContent = "Privacy choices";
       footer.appendChild(preferences);
       preferences.addEventListener("click", function () {
         panel.hidden = false;
-        panel.querySelector("button").focus();
+        showPreferences();
       });
     }
-
-    panel = document.createElement("section");
-    panel.id = "ak-analytics-panel";
-    panel.setAttribute("role", "dialog");
-    panel.setAttribute("aria-modal", "false");
-    panel.setAttribute("aria-labelledby", "ak-analytics-title");
-
-    const heading = document.createElement("h2");
-    heading.id = "ak-analytics-title";
-    heading.textContent = "A note on privacy";
-    panel.appendChild(heading);
-
-    const description = document.createElement("p");
-    description.appendChild(document.createTextNode(
-      "Essential features work automatically. With your permission, " +
-      "Google Analytics helps me understand which pages and photo albums " +
-      "people visit, so I can improve and share the journal. " +
-      "Google may use analytics cookies and process technical information " +
-      "to provide these statistics. "
-    ));
-    const details = document.createElement("a");
-    details.href = "/about/";
-    details.textContent = "Privacy details";
-    description.appendChild(details);
-    panel.appendChild(description);
-
-    const buttons = document.createElement("div");
-    buttons.id = "ak-analytics-choices";
-    const decline = document.createElement("button");
-    decline.type = "button";
-    decline.textContent = "Only necessary";
-    const accept = document.createElement("button");
-    accept.type = "button";
-    accept.textContent = "Accept analytics";
-    buttons.appendChild(decline);
-    buttons.appendChild(accept);
-    panel.appendChild(buttons);
-    document.body.appendChild(panel);
-    panel.hidden = preference() !== null;
-
-    accept.addEventListener("click", function () {
-      savePreference("accepted");
-      panel.hidden = true;
-      window["ga-disable-" + MEASUREMENT_ID] = false;
-      enableAnalytics();
-    });
-    decline.addEventListener("click", function () {
-      const wasAccepted = preference() === "accepted";
-      savePreference("declined");
-      panel.hidden = true;
-      window["ga-disable-" + MEASUREMENT_ID] = true;
-      if (typeof window.gtag === "function") {
-        window.gtag("consent", "update", { analytics_storage: "denied" });
-      }
-      clearAnalyticsCookies();
-      // Removing an already-running tag reliably requires a fresh document.
-      if (wasAccepted && tagStarted) {
-        location.reload();
-      }
-    });
   }
 
   function trackAlbumClicks(event) {
-    if (preference() !== "accepted" || !tagStarted || typeof window.gtag !== "function") {
+    if (!hasAnalyticsConsent() || !tagStarted || typeof window.gtag !== "function") {
       return;
     }
     const target = event.target;
@@ -225,7 +343,7 @@
   function initialize() {
     try {
       createUI();
-      if (preference() === "accepted") {
+      if (hasAnalyticsConsent()) {
         enableAnalytics();
       }
       document.addEventListener("click", trackAlbumClicks, true);
