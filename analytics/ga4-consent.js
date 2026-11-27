@@ -97,6 +97,42 @@
       // Ad blockers or connectivity problems must not affect the journal.
     };
     document.head.appendChild(googleTag);
+    beginPhotoProgressTracking();
+  }
+
+  function beginPhotoProgressTracking() {
+    // Only on album pages, only after active analytics consent.
+    // These are reached-in-view checkpoints, not proof someone studied a photo.
+    if (!("IntersectionObserver" in window)) return;
+    if (!/^\/journal\/\d{4}-\d{2}\/[a-z0-9-]+\/?$/.test(location.pathname)) {
+      return;
+    }
+
+    const checkpoints = new Set(["1", "3", "5", "7"]);
+    const photos = Array.from(
+      document.querySelectorAll("figure.frame[data-ak-photo-number]")
+    ).filter(function (figure) {
+      return checkpoints.has(figure.getAttribute("data-ak-photo-number"));
+    });
+    if (photos.length === 0) return;
+
+    const seen = new Set();
+    const observer = new IntersectionObserver(function (entries) {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        const photoNumber = entry.target.getAttribute("data-ak-photo-number");
+        observer.unobserve(entry.target);
+        if (!photoNumber || seen.has(photoNumber)) continue;
+        seen.add(photoNumber);
+        if (!hasAnalyticsConsent() || typeof window.gtag !== "function") continue;
+        window.gtag("event", "photo_progress", {
+          album_path: location.pathname,
+          photo_checkpoint: photoNumber
+        });
+      }
+    }, { rootMargin: "0px 0px -35% 0px", threshold: 0 });
+
+    photos.forEach(function (photo) { observer.observe(photo); });
   }
 
   function clearAnalyticsCookies() {
