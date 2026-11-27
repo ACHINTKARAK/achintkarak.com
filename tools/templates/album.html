@@ -105,6 +105,9 @@
         {% endif %}
         decoding="async"
       />
+      {% if image_captions.get(image_number) %}
+      <figcaption class="photo-caption">{{ image_captions[image_number] }}</figcaption>
+      {% endif %}
     </figure>
     {% endfor %}
 
