@@ -460,10 +460,9 @@ summary::-webkit-details-marker{
 
 /* A personal journal note, not miniature image metadata. */
 .photo-caption{
-  /* Match the photograph width so the inset follows the image's edge. */
-  width: min(980px, 94vw);
+  width: min(620px, 94vw);
   margin: 18px auto 0;
-  padding: 0 35px;
+  padding: 0 16px;
   border: 0;
   color: var(--muted);
   font-family: var(--font);
@@ -472,7 +471,15 @@ summary::-webkit-details-marker{
   font-style: normal;
   line-height: 1.6;
   letter-spacing: normal;
-  text-align: left;
+  text-align: center;
+}
+
+/* A quiet editorial dash marks an author's observation. */
+.photo-caption::before{
+  content: "—";
+  display: inline-block;
+  margin-right: 0.6em;
+  opacity: 0.65;
 }
 
 .frame img{
