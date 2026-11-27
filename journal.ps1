@@ -330,7 +330,7 @@ switch ($Action) {
 
         Write-Host ""
         Write-Host "Git whitespace check:"
-        git diff --check
+        git --no-pager diff --check
 
         if ($LASTEXITCODE -ne 0) {
             throw "Git found a whitespace error."
@@ -338,7 +338,7 @@ switch ($Action) {
 
         Write-Host ""
         Write-Host "Current Git status:"
-        git status --short
+        git --no-pager status --short
 
         Write-Host ""
         Write-Host "Checks passed."
