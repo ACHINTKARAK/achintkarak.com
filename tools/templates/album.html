@@ -45,6 +45,7 @@
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="stylesheet" href="/styles.css?v={{ css_version }}" />
   <script src="/site.js?v={{ js_version }}"></script>
+  <script defer src="/analytics/ga4-consent.js"></script>
 </head>
 <body>
   <main class="wrap">
@@ -75,6 +76,20 @@
       {% if album.description %}
       <p class="album-description">{{ album.description }}</p>
       {% endif %}
+
+      <nav class="pills" aria-label="Previous and next albums" style="margin-top: 18px;">
+        {% if prev_album %}
+        <a class="btn" href="{{ prev_album.url }}">← Previous</a>
+        {% else %}
+        <span class="btn disabled" aria-disabled="true">← Previous</span>
+        {% endif %}
+
+        {% if next_album %}
+        <a class="btn" href="{{ next_album.url }}">Next →</a>
+        {% else %}
+        <span class="btn disabled" aria-disabled="true">Next →</span>
+        {% endif %}
+      </nav>
     </header>
 
     {% for image_number in range(1, album.image_count + 1) %}

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <script>
+    (function () {
+      try {
+        var theme = localStorage.getItem("ak_theme");
+        if (theme === "dark" || theme === "light") {
+          document.documentElement.setAttribute("data-theme", theme);
+        }
+      } catch (error) {}
+    }());
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Privacy — Achint Karak</title>
+  <meta name="description" content="Privacy and analytics preferences for Achint Karak's photo journal." />
+  <link rel="canonical" href="https://achintkarak.com/privacy/" />
+  <link rel="stylesheet" href="/styles.css" />
+  <script src="/site.js"></script>
+  <script defer src="/analytics/ga4-consent.js"></script>
+  <style>
+    .privacy-content { max-width: 560px; margin: 0 auto; font-size: 14px; }
+    .privacy-content h2 { font-size: 17px; font-weight: normal; margin: 2rem 0 .6rem; }
+    .privacy-content p { line-height: 1.8; margin: 0 0 1.1rem; }
+    .privacy-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1.25rem; }
+    .privacy-actions button { padding: .5rem .85rem; background: transparent; color: var(--text);
+      border: 1px solid var(--hair); font: inherit; font-size: 13px; cursor: pointer; }
+    .privacy-actions button:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+    .privacy-content a { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <main class="wrap about-page">
+    <nav class="top-nav" aria-label="Primary navigation">
+      <a class="top-link" href="/about/">About</a>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Use dark theme" title="Use dark theme">◐</button>
+    </nav>
+    <header class="meta"><div class="date">Privacy</div></header>
+    <section class="privacy-content" aria-label="Privacy information">
+      <p>This photographic journal can be viewed without accepting analytics. Essential local browser settings, such as your theme and consent choice, help the site function and remember your preferences.</p>
+      <h2>Optional website analytics</h2>
+      <p>If you agree, Google Analytics helps me understand which pages and photo albums people view, and which album links are opened. Google may set analytics cookies and process technical data such as browser details and approximate location. The journal does not intentionally send names, email addresses or messages to Analytics. See <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google's privacy policy</a>.</p>
+      <p>Advertising and personalised marketing tracking are not currently enabled. Any future advertising-related tracking will require a new, separate choice.</p>
+      <h2>Your choice</h2>
+      <p>You may accept or reject optional analytics and change your mind at any time. Your decision is remembered in this browser for 180 days, unless browser storage is cleared or the purposes materially change. Withdrawing permission stops future tracking and attempts to remove this site's analytics cookies; it does not automatically erase data already received by Google.</p>
+      <div class="privacy-actions">
+        <button type="button" id="ak-open-privacy">Change analytics choice</button>
+        <button type="button" id="ak-withdraw-privacy">Reject analytics</button>
+      </div>
+    </section>
+    <nav class="pills"><a class="btn" href="/">Home</a></nav>
+    <footer class="footer">© Achint Karak</footer>
+  </main>
+</body>
+</html>
