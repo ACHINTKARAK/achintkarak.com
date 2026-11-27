@@ -100,13 +100,17 @@
       "  border: 1px solid currentColor; box-shadow: 0 3px 20px #0002;",
       "  font: inherit; line-height: 1.5;",
       "}",
-      "#ak-analytics-panel p { margin: 0 0 .8rem; font-size: .92rem; }",
+      "#ak-analytics-panel h2 {",
+      "  margin: 0 0 .45rem; color: inherit; font: inherit;",
+      "  font-size: 1rem; font-weight: 600; letter-spacing: .01em;",
+      "}",
+      "#ak-analytics-panel p { margin: 0 0 .8rem; font-size: .88rem; }",
       "#ak-analytics-panel a { color: inherit; text-decoration: underline; }",
       "#ak-analytics-choices { display: flex; flex-wrap: wrap; gap: .65rem; }",
       "#ak-analytics-choices button {",
       "  font: inherit; color: inherit; background: transparent;",
       "  border: 1px solid currentColor; border-radius: 2px;",
-      "  padding: .35rem .7rem; cursor: pointer;",
+      "  padding: .4rem .8rem; cursor: pointer; flex: 1 1 180px;",
       "}",
       "#ak-analytics-choices button:focus-visible,",
       "#ak-analytics-preferences:focus-visible {",
@@ -137,13 +141,22 @@
 
     panel = document.createElement("section");
     panel.id = "ak-analytics-panel";
-    panel.setAttribute("role", "region");
-    panel.setAttribute("aria-label", "Optional website analytics");
+    panel.setAttribute("role", "dialog");
+    panel.setAttribute("aria-modal", "false");
+    panel.setAttribute("aria-labelledby", "ak-analytics-title");
+
+    const heading = document.createElement("h2");
+    heading.id = "ak-analytics-title";
+    heading.textContent = "A note on privacy";
+    panel.appendChild(heading);
 
     const description = document.createElement("p");
     description.appendChild(document.createTextNode(
-      "May I use Google Analytics to see which photo albums are viewed? " +
-      "Google may set analytics cookies if you accept. The journal works either way. "
+      "Essential features work without analytics. If you agree, " +
+      "Google Analytics helps me see which pages and photo albums are viewed " +
+      "and which album links are opened. Google may also receive standard " +
+      "technical details, including device information and approximate location. " +
+      "I don't use analytics for advertising. "
     ));
     const details = document.createElement("a");
     details.href = "/about/";
@@ -155,7 +168,7 @@
     buttons.id = "ak-analytics-choices";
     const decline = document.createElement("button");
     decline.type = "button";
-    decline.textContent = "Decline";
+    decline.textContent = "Only necessary";
     const accept = document.createElement("button");
     accept.type = "button";
     accept.textContent = "Accept analytics";
