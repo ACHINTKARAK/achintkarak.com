@@ -311,6 +311,7 @@
         " of " +
         album.count;
 
+      const descriptiveAlt = album.alts && album.alts[String(imageNumber)];
       featureLink.href = albumUrl;
       featureLink.setAttribute(
         "aria-label",
@@ -318,7 +319,13 @@
       );
 
       featureImage.src = imageUrl;
-      featureImage.alt = imageAlt;
+      featureImage.alt =
+        typeof descriptiveAlt === "string" && descriptiveAlt.trim()
+          ? descriptiveAlt
+          : imageAlt;
+
+      const exploreLink = document.getElementById("homeFeatureExplore");
+      if (exploreLink) exploreLink.href = albumUrl;
 
       featureSource.textContent =
         album.title +
