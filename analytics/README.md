@@ -7,9 +7,9 @@ This feature is isolated from the journal's existing `site.js`, styling and page
 ## Behaviour
 
 - Google Analytics is **not downloaded or initialized until someone selects “Accept analytics.”**
-- On first visit, a small consent control appears with Accept and Decline as equal choices.
+- On a visitor's first visit in a browser with no stored choice, a small consent notice appears with **Accept analytics** and **Only necessary** as equally prominent choices. The choice is remembered in that browser, so returning visitors are not repeatedly prompted.
 - The choice is stored in this browser (localStorage); it is not itself transmitted to Google.
-- Visitors who decline can browse and view photographs as normal.
+- Visitors who select **Only necessary** can browse and view photographs as normal. No Google Analytics scripts are requested until the visitor explicitly accepts.
 - “Analytics preferences” remains available in each page footer to change the decision.
 - When a user revokes acceptance, the script disables collection, attempts to remove `_ga` cookies, and reloads the document to unload the tag. Already-collected data is not deleted.
 - The script records GA4 page views and a custom `album_open` event when an internal album link is selected. `album_path` and `source_path` are site paths, not personal data.
@@ -20,7 +20,7 @@ This feature is isolated from the journal's existing `site.js`, styling and page
 
 1. Review the draft PR before merging. **The live website stays untouched while this branch is unmerged.**
 2. Pull this branch locally and run `./journal.ps1 check` (PowerShell) to validate the usual build, then `./journal.ps1 preview` to check layout and navigation.
-3. On local preview, the consent control should display; GA4 does not actually load on localhost to avoid contaminating statistics.
+3. On local preview, the consent control should display for a browser without a stored preference; GA4 does not actually load on localhost to avoid contaminating statistics. To simulate a first-time visitor after testing, use a fresh private window or clear the `ak_analytics_consent_v1` localStorage key.
 4. After merging and rebuilding/deploying with your usual publishing process, visit `https://achintkarak.com` in a fresh browser session.
 5. Before acceptance, check Network: **no requests to `googletagmanager.com` or `google-analytics.com`** from this integration.
 6. Accept analytics; verify a Google tag request appears. Then check Google Analytics → Reports → Realtime (reporting can take some time).
@@ -33,4 +33,4 @@ Revert the template additions and remove `analytics/ga4-consent.js`, then run th
 
 ## Privacy notes
 
-Google receives analytics data for visitors who opt in. If you have enabled GA4 enhanced measurement (scrolls, outbound clicks and similar), those additional events may be collected after consent. Adjust that setting in GA4 if you want to limit collection further. Review your site's privacy notice, data retention and Irish/EU consent requirements before production activation.
+Google receives analytics data for visitors who opt in. Consent text describes viewed pages, album-link clicks and standard technical information such as device details and approximate location, without inaccurately claiming that only page content is collected. If you have enabled GA4 enhanced measurement (scrolls, outbound clicks and similar), those additional events may be collected after consent. Adjust that setting in GA4 if you want to limit collection further. Review your site's privacy notice, data retention and Irish/EU consent requirements before production activation.
