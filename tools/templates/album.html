@@ -79,13 +79,13 @@
 
       <nav class="pills" aria-label="Previous and next albums" style="margin-top: 18px;">
         {% if prev_album %}
-        <a class="btn" href="{{ prev_album.url }}">← Previous</a>
+        <a class="btn" href="{{ prev_album.url }}">← {{ prev_album.title }}</a>
         {% else %}
         <span class="btn disabled" aria-disabled="true">← Previous</span>
         {% endif %}
 
         {% if next_album %}
-        <a class="btn" href="{{ next_album.url }}">Next →</a>
+        <a class="btn" href="{{ next_album.url }}">{{ next_album.title }} →</a>
         {% else %}
         <span class="btn disabled" aria-disabled="true">Next →</span>
         {% endif %}
@@ -93,10 +93,10 @@
     </header>
 
     {% for image_number in range(1, album.image_count + 1) %}
-    <figure class="frame">
+    <figure class="frame" data-ak-photo-number="{{ image_number }}">
       <img
         src="{{ image_number }}.{{ album.image_ext }}"
-        alt="{{ album.title }} — photograph {{ image_number }} of {{ album.image_count }}"
+        alt="{{ image_alts.get(image_number, album.title ~ ' — photograph ' ~ image_number ~ ' of ' ~ album.image_count) }}"
         {% if image_number == 1 %}
         loading="eager"
         fetchpriority="high"
