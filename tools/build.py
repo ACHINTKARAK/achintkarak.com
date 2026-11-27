@@ -952,16 +952,12 @@ def build_manifest(months: Sequence[Month], root: Path) -> Dict[str, Any]:
                         "ext": album.image_ext,
                         "url": album.url,
                         "created_at": album.created_at,
-                        **(
-                            {"alts": {
-                                str(number): description
-                                for number, description in load_image_alts(
-                                    root / album.rel_dir, album.image_count
-                                ).items()
-                            }}
-                            if load_image_alts(root / album.rel_dir, album.image_count)
-                            else {}
-                        ),
+                        "alts": {
+                            str(number): description
+                            for number, description in load_image_alts(
+                                root / album.rel_dir, album.image_count
+                            ).items()
+                        },
                     }
                     for album in month.albums
                 ],
