@@ -83,12 +83,15 @@
         />
       </a>
 
-      <p
-        class="home-feature-source"
-        id="homeFeatureSource"
-        aria-live="polite"
-        hidden
-      ></p>
+      <div class="home-feature-meta">
+        <p
+          class="home-feature-source"
+          id="homeFeatureSource"
+          aria-live="polite"
+          hidden
+        ></p>
+        <a class="home-feature-explore" id="homeFeatureExplore" href="{{ featured_album.url }}">Explore this journal →</a>
+      </div>
     </section>
 
     {% if latest_albums %}

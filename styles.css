@@ -453,7 +453,33 @@ summary::-webkit-details-marker{
   margin: 0;
 
   display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
+}
+
+/* A personal journal note, not miniature image metadata. */
+.photo-caption{
+  width: min(620px, 94vw);
+  margin: 18px auto 0;
+  padding: 0 16px;
+  border: 0;
+  color: var(--muted);
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 1.6;
+  letter-spacing: normal;
+  text-align: center;
+}
+
+/* A quiet editorial dash marks an author's observation. */
+.photo-caption::before{
+  content: "—";
+  display: inline-block;
+  margin-right: 0.6em;
+  opacity: 0.65;
 }
 
 .frame img{
@@ -537,6 +563,10 @@ summary::-webkit-details-marker{
     --gap: 42px;
   }
 
+  .photo-caption{
+    padding-inline: 20px;
+  }
+
   .top-nav{
     top: 20px;
     right: var(--padX);
@@ -558,11 +588,37 @@ summary::-webkit-details-marker{
 }
 
 
-/* Homepage discovery source */
-.home-feature-source {
-  width: 100%;
-  max-width: 720px;
+/* Featured image metadata: album on the left, invitation on the right. */
+.home-feature-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  column-gap: 16px;
+  row-gap: 6px;
+  width: min(720px, 94vw);
   margin: 0.7rem auto 0;
+}
+
+.home-feature .home-feature-meta .home-feature-explore {
+  display: block;
+  flex: 0 0 auto;
+  width: auto;
+  max-width: 100%;
+  margin: 0 0 0 auto;
+  color: var(--muted);
+  font-size: 13px;
+  letter-spacing: 0.025em;
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+/* Homepage discovery source */
+.home-feature .home-feature-meta .home-feature-source {
+  flex: 1 1 auto;
+  width: auto;
+  max-width: none;
+  margin: 0;
   font-size: 0.78rem;
   line-height: 1.5;
   letter-spacing: 0.015em;

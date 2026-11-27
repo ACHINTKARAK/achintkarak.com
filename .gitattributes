@@ -1,0 +1,10 @@
+# Python/Jinja renders UTF-8 static pages with LF line endings.
+# Explicit LF prevents Windows Git from warning that it will convert
+# generated files to CRLF during status and diff operations.
+*.html text eol=lf
+*.json text eol=lf
+*.xml  text eol=lf
+*.css  text eol=lf
+*.js   text eol=lf
+*.py   text eol=lf
+*.md   text eol=lf
