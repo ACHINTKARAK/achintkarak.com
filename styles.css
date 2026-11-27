@@ -458,14 +458,19 @@ summary::-webkit-details-marker{
   justify-content: center;
 }
 
+/* A personal journal note, not miniature image metadata. */
 .photo-caption{
-  width: min(720px, 94vw);
-  margin: 12px auto 0;
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.65;
-  text-align: center;
-  font-style: italic;
+  width: min(620px, 100%);
+  margin: 20px auto 0;
+  padding: 2px 0 2px 16px;
+  border-left: 1px solid var(--hair);
+  color: var(--text);
+  font-size: 16px;
+  line-height: 1.6;
+  text-align: left;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0.005em;
 }
 
 .frame img{
