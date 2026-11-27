@@ -33,4 +33,10 @@ Revert the template additions and remove `analytics/ga4-consent.js`, then run th
 
 ## Privacy notes
 
-Google receives analytics data for visitors who opt in. Consent text describes viewed pages, album-link clicks and standard technical information such as device details and approximate location, without inaccurately claiming that only page content is collected. If you have enabled GA4 enhanced measurement (scrolls, outbound clicks and similar), those additional events may be collected after consent. Adjust that setting in GA4 if you want to limit collection further. Review your site's privacy notice, data retention and Irish/EU consent requirements before production activation.
+Google receives analytics data for visitors who opt in. The first-visit notice focuses on page and album viewing; the linked About privacy section accurately explains Google's additional default technical processing, including approximate location and browser/device information. Future advertising-related tracking or use for a materially different purpose needs a separate consent review before activation. If you have enabled GA4 enhanced measurement (scrolls, outbound clicks and similar), those additional events may be collected after consent. Adjust that setting in GA4 if you want to limit collection further. Review your site's privacy notice, data retention and Irish/EU consent requirements before production activation.
+
+## Google Analytics property settings
+
+This website code disables Google signals and ad-personalization signals, and sets advertising consent to denied. Google Analytics may still process default geolocation/device data for ordinary analytics. To reduce granularity, open Google Analytics → Admin → Data collection and modification → Data collection → **Granular location and device data collection** and disable unwanted regions (or all regions). This is a Google property setting, not something the journal's JavaScript can fully control.
+
+Consent for current website analytics must not silently be treated as consent for future advertising personalization or remarketing. Revisit purposes, consent choices, GA4 settings and the privacy notice if those features are introduced.
