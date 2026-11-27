@@ -110,18 +110,18 @@
 
     <nav class="pills" aria-label="Album navigation">
       {% if prev_album %}
-      <a class="btn" href="{{ prev_album.url }}">← Previous</a>
+      <a class="btn" href="{{ prev_album.url }}">← {{ prev_album.title }}</a>
       {% else %}
-      <span class="btn disabled">← Previous</span>
+      <span class="btn disabled" aria-disabled="true">← Previous</span>
       {% endif %}
 
       <a class="btn" href="/journal/{{ album.month_id }}/">Month</a>
       <a class="btn" href="/">Home</a>
 
       {% if next_album %}
-      <a class="btn" href="{{ next_album.url }}">Next →</a>
+      <a class="btn" href="{{ next_album.url }}">{{ next_album.title }} →</a>
       {% else %}
-      <span class="btn disabled">Next →</span>
+      <span class="btn disabled" aria-disabled="true">Next →</span>
       {% endif %}
     </nav>
 
