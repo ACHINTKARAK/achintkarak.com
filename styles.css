@@ -456,6 +456,7 @@ summary::-webkit-details-marker{
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  flex-wrap: wrap;
 }
 
 /* A personal journal note, not miniature image metadata. */
@@ -489,6 +490,19 @@ summary::-webkit-details-marker{
   border: var(--border);
   background: var(--bg);
 }
+
+/* Quiet, book-like captions under each photograph. */
+.frame .photo-caption{
+  flex: 0 0 100%;
+  max-width: 46rem;
+  margin: 13px auto 0;
+  padding: 0 10px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.65;
+  text-align: center;
+}
+
 
 
 /* ---------- Buttons ---------- */
@@ -641,4 +655,21 @@ summary::-webkit-details-marker{
   .js #homeFeatureImage.is-ready {
     transition: none;
   }
+}
+
+
+/* Photo caption alignment correction */
+.frame {
+    flex-direction: column;
+    align-items: center;
+    flex-wrap: nowrap;
+}
+
+.frame img {
+    max-width: 100%;
+}
+
+.frame .photo-caption {
+    flex: none;
+    width: 100%;
 }
