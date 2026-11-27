@@ -460,17 +460,19 @@ summary::-webkit-details-marker{
 
 /* A personal journal note, not miniature image metadata. */
 .photo-caption{
-  width: min(620px, 100%);
-  margin: 20px auto 0;
-  padding: 2px 0 2px 16px;
-  border-left: 1px solid var(--hair);
-  color: var(--text);
-  font-size: 16px;
-  line-height: 1.6;
-  text-align: left;
-  font-style: normal;
+  /* Match the photograph width so the inset follows the image's edge. */
+  width: min(980px, 94vw);
+  margin: 18px auto 0;
+  padding: 0 35px;
+  border: 0;
+  color: var(--muted);
+  font-family: var(--font);
+  font-size: 14px;
   font-weight: 400;
-  letter-spacing: 0.005em;
+  font-style: normal;
+  line-height: 1.6;
+  letter-spacing: normal;
+  text-align: left;
 }
 
 .frame img{
@@ -552,6 +554,10 @@ summary::-webkit-details-marker{
     --padY: 56px;
     --padX: 18px;
     --gap: 42px;
+  }
+
+  .photo-caption{
+    padding-inline: 20px;
   }
 
   .top-nav{
