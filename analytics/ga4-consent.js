@@ -152,11 +152,11 @@
 
     const description = document.createElement("p");
     description.appendChild(document.createTextNode(
-      "Essential features work without analytics. If you agree, " +
-      "Google Analytics helps me see which pages and photo albums are viewed " +
-      "and which album links are opened. Google may also receive standard " +
-      "technical details, including device information and approximate location. " +
-      "I don't use analytics for advertising. "
+      "Essential features work automatically. With your permission, " +
+      "Google Analytics helps me understand which pages and photo albums " +
+      "people visit, so I can improve and share the journal. " +
+      "Google may use analytics cookies and process technical information " +
+      "to provide these statistics. "
     ));
     const details = document.createElement("a");
     details.href = "/about/";
