@@ -6,15 +6,15 @@ This feature is isolated from the journal's existing `site.js`, styling and page
 
 ## Behaviour
 
-- On the first visit in a browser with no valid saved choice, visitors see an understated privacy notice.
-- The notice offers **Accept analytics**, **Reject optional** and **Manage choices** with equally accessible controls.
-- **Manage choices** lists Essential (always on), Audience analytics (off by default), and Advertising & personalisation (not currently used and disabled). Clicking **Save my choices** respects the optional analytics checkbox.
-- Google Analytics is **not downloaded or initialized until someone explicitly selects analytics**.
-- A saved choice is versioned and expires after 180 days; a material change to the actual purposes/recipients must trigger a new informed choice, regardless of earlier consent.
-- Preference storage is browser-local. Visitors who reject can browse the entire journal unchanged.
-- After a decision, the consent notice disappears and no permanent consent button is shown. A discreet **Privacy** text link stays in the footer so visitors can easily reopen their choices and withdraw consent. Revoking removes analytics cookies on a best-effort basis, disables future measurement and reloads if Google scripts were previously loaded.
-- Google currently receives only opted-in page views and custom `album_open` internal link events (plus normal GA4 technical data). No advertising tags or personalization are enabled.
-- **A future advertising implementation requires separately disclosed, freely given permission.** An inactive disabled category in today's interface is NOT future permission for any unknown advertising vendor or purpose.
+- On the first visit in a browser without a valid stored decision, visitors see an unobtrusive notice offering **Accept analytics** and **Reject optional**. There is no Manage choices action.
+- After either decision, the notice closes and does **not** appear on subsequent pages in that browser for 180 days. New sessions and page reloads do not renew the 180-day deadline.
+- The journal has **no permanent privacy control in its footer**. The clean About page only contains a discreet link to `/privacy/`, where visitors may withdraw or change consent at any time.
+- `privacy/index.html` is a static standalone page and is not modified or removed by `tools/build.py`.
+- Google Analytics is **never downloaded or initialized until someone explicitly accepts analytics**. Local `localhost` preview never sends GA4 data.
+- Browser-local choice is versioned and expires after 180 days. Clearing browser storage or a future material purpose/recipient change may trigger the notice earlier.
+- Withdrawal prevents further measurement and attempts to remove this site's GA4 cookies. A running Google tag triggers a reload to stop the script.
+- Google currently receives only opted-in page views and custom `album_open` internal link events (plus standard GA4 technical data). Advertising consent remains denied and Google advertising signals disabled.
+- Future advertising-related tracking will require a newly disclosed purpose and separate affirmative consent.
 
 ## Deployment and testing
 
@@ -25,7 +25,7 @@ This feature is isolated from the journal's existing `site.js`, styling and page
 5. Before acceptance, check Network: **no requests to `googletagmanager.com` or `google-analytics.com`** from this integration.
 6. Accept analytics; verify a Google tag request appears. Then check Google Analytics → Reports → Realtime (reporting can take some time).
 7. Open an album and verify its page path appears. If you want custom click reporting, register `album_path` as an event-scoped custom dimension in GA4.
-8. Test Reject optional, then re-open via the discreet Privacy footer link. Test on mobile and with blocked third-party scripts.
+8. Test Reject optional, then navigate to About → Privacy → Change analytics choice or Reject analytics; check that no link appears next to the copyright on the homepage. Test on mobile and with blocked third-party scripts.
 
 ## Reverting
 
@@ -33,7 +33,7 @@ Revert the template additions and remove `analytics/ga4-consent.js`, then run th
 
 ## Privacy notes
 
-Google receives analytics data for visitors who opt in. The first-visit notice describes album/page analytics, and the **Manage choices** panel explains Google's standard technical processing and links to Google's own privacy policy. The About page stays dedicated to the photographic journal. Advertising-related tracking is currently disabled; enabling any actual advertising uses requires an updated notice, a separate optional category with real vendor/purpose details, and fresh, specific permission. If you have enabled GA4 enhanced measurement (scrolls, outbound clicks and similar), those additional events may be collected after consent. Adjust that setting in GA4 if you want to limit collection further. Review your site's privacy notice, data retention and Irish/EU consent requirements before production activation.
+Google receives analytics data for visitors who opt in. The first-visit notice describes album/page analytics, and the standalone **Privacy** page explains Google's standard technical processing and links to Google's privacy policy. The About page contains only a discreet link; no privacy paragraph or widget appears alongside the photographic statement. Advertising-related tracking is currently disabled; enabling any actual advertising uses requires an updated notice, a separate optional category with real vendor/purpose details, and fresh, specific permission. If you have enabled GA4 enhanced measurement (scrolls, outbound clicks and similar), those additional events may be collected after consent. Adjust that setting in GA4 if you want to limit collection further. Review your site's privacy notice, data retention and Irish/EU consent requirements before production activation.
 
 ## Google Analytics property settings
 
