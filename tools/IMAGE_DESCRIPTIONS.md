@@ -14,7 +14,27 @@ journal/YYYY-MM/album-slug/
 └── captions.json      (optional: visible one-line interpretations)
 ```
 
-To add **visible** captions locally, copy `tools/examples/captions.example.json` into an album folder as `captions.json` and edit the strings. Example only:
+The **same caption layout applies automatically to every existing and future album**. To prepare all existing albums locally without overwriting any of your work:
+
+```powershell
+cd C:\Achint-Website\journal-engagement-test
+git pull
+.\journal.ps1 captions -All
+```
+
+This creates blank `captions.json` files only where one does not exist. It does **not** make up captions and does not replace Marrakech's captions.
+
+To enter or revise an album's seven observations in PowerShell:
+
+```powershell
+.\journal.ps1 captions -Month 2025-12 -Slug dingle-ireland
+```
+
+Press Enter to preserve an existing caption; type `/clear` to remove one. Edit the same JSON file directly if you prefer.
+
+For every **new** album, `.\journal.ps1 new -Month YYYY-MM -Slug place-country` now creates `captions.json` and asks for seven captions. Blank entries are fine. If you create an album folder manually rather than using `journal.ps1 new`, the first interactive build will ask for captions when it encounters the new album. Existing albums never trigger repeated build prompts.
+
+To add **visible** captions manually, copy `tools/examples/captions.example.json` into an album folder as `captions.json` and edit the strings. Example only:
 
 ```json
 {
