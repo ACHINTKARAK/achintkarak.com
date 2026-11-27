@@ -756,6 +756,46 @@ def load_image_captions(album_dir: Path, image_count: int) -> Dict[int, str]:
     return result
 
 
+def prompt_new_album_captions(
+    album_dir: Path,
+    root: Path,
+    image_count: int,
+    interactive: bool,
+    known_album: bool,
+) -> None:
+    """
+    Safety net for albums added manually rather than with journal.ps1 new.
+
+    Existing albums are never prompted, even if they intentionally omit
+    captions.json. For new albums, ask once and save a blank-inclusive file
+    so an intentionally skipped caption stays skipped on later builds.
+    """
+    path = album_dir / "captions.json"
+    if known_album or path.exists() or not interactive:
+        return
+
+    print(f"\nNew album: {album_dir.relative_to(root)}")
+    print("  Enter a short personal observation for each photograph.")
+    print("  Press Enter to leave a photograph without a caption.")
+    print("  Captions may also be edited later in captions.json.")
+
+    captions: Dict[str, str] = {}
+    for number in range(1, image_count + 1):
+        while True:
+            caption = " ".join(
+                input(f"  Photograph {number} caption (optional): ").split()
+            )
+            if len(caption) <= 180:
+                captions[str(number)] = caption
+                break
+            print("  Keep each caption under 180 characters.")
+
+    write_text_atomic(
+        path, json.dumps(captions, indent=2, ensure_ascii=False) + "\n"
+    )
+    print(f"  Wrote: {path.relative_to(root)}")
+
+
 # -----------------------------
 # Automatic stable album order
 # -----------------------------
@@ -908,6 +948,14 @@ def scan_repo(
                 root,
                 image_count,
                 interactive,
+            )
+
+            prompt_new_album_captions(
+                album_dir,
+                root,
+                image_count,
+                interactive,
+                known_album=(month_id, slug) in previous_created_times,
             )
 
             created_timestamp = previous_created_times.get(
