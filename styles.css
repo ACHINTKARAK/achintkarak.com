@@ -558,6 +558,19 @@ summary::-webkit-details-marker{
 }
 
 
+/* A quiet invitation into the featured journal entry. */
+.home-feature-explore {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  margin: 0.9rem auto 0;
+  color: var(--muted);
+  font-size: 13px;
+  letter-spacing: 0.025em;
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
 /* Homepage discovery source */
 .home-feature-source {
   width: 100%;
