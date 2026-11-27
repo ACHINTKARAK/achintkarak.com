@@ -1,3 +1,52 @@
+# Two kinds of text for each photograph
+
+**Alt text** (optional, invisible) accurately describes visible content for screen-reader accessibility and image search. It lives in `alt.json`.
+
+**Author captions** (optional, visible) express Achint's own observation or point of view in a restrained one-liner. They live in `captions.json`. These are separate concepts: do not copy evocative caption text into alt text.
+
+For a new album, use:
+
+```text
+journal/YYYY-MM/album-slug/
+├── 1.jpg ... 7.jpg
+├── description.txt
+├── alt.json           (optional: invisible factual descriptions)
+└── captions.json      (optional: visible one-line interpretations)
+```
+
+To add **visible** captions locally, copy `tools/examples/captions.example.json` into an album folder as `captions.json` and edit the strings. Example only:
+
+```json
+{
+  "1": "A moment of stillness before the street takes over.",
+  "2": "",
+  "3": "",
+  "4": "",
+  "5": "",
+  "6": "",
+  "7": ""
+}
+```
+
+Blank or missing entries display **no caption**. Captions are rendered directly beneath their respective photograph in a quiet serif style and are limited to 180 characters each. Use one short, personal, truthful observation: ideally 8–18 words. Avoid explanations that the viewer must accept, invented emotions, tourist slogans, and repetitive captions. Only author final text after looking at the actual photo.
+
+The website keeps exactly seven numbered photographs; `alt.json` continues to work independently. All changes remain in the local test branch until approved.
+
+## Testing
+
+```powershell
+cd C:\Achint-Website\journal-engagement-test
+git pull
+Copy-Item .\tools\examples\captions.example.json .\journal\2026-11\marrakech-morocco\captions.json
+notepad .\journal\2026-11\marrakech-morocco\captions.json
+.\journal.ps1 check
+.\journal.ps1 preview
+```
+
+Enter at least one caption to see it displayed. An empty `captions.json` will not produce visible text.
+
+---
+
 # Per-photo descriptions (alt text)
 
 Each album still contains exactly seven numbered photographs and its usual `description.txt`.
