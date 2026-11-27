@@ -581,12 +581,24 @@ summary::-webkit-details-marker{
 }
 
 
-/* A quiet invitation into the featured journal entry. */
-.home-feature-explore {
+/* Featured image metadata: album on the left, invitation on the right. */
+.home-feature-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  column-gap: 16px;
+  row-gap: 6px;
+  width: min(720px, 94vw);
+  margin: 0.7rem auto 0;
+}
+
+.home-feature .home-feature-meta .home-feature-explore {
   display: block;
-  width: max-content;
+  flex: 0 0 auto;
+  width: auto;
   max-width: 100%;
-  margin: 0.9rem auto 0;
+  margin: 0 0 0 auto;
   color: var(--muted);
   font-size: 13px;
   letter-spacing: 0.025em;
@@ -595,10 +607,11 @@ summary::-webkit-details-marker{
 }
 
 /* Homepage discovery source */
-.home-feature-source {
-  width: 100%;
-  max-width: 720px;
-  margin: 0.7rem auto 0;
+.home-feature .home-feature-meta .home-feature-source {
+  flex: 1 1 auto;
+  width: auto;
+  max-width: none;
+  margin: 0;
   font-size: 0.78rem;
   line-height: 1.5;
   letter-spacing: 0.015em;
