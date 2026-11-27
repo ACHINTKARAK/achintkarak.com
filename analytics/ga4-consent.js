@@ -167,10 +167,13 @@
       "}",
       "#ak-analytics-save { display: block; width: 100%; margin-top: .75rem; }",
       "#ak-analytics-preferences {",
-      "  display: block; margin: .6rem auto 0; padding: .15rem;",
-      "  color: inherit; background: transparent; border: 0; cursor: pointer;",
-      "  font: inherit; font-size: .78rem; opacity: .8;",
-      "  text-decoration: underline;",
+      "  display: inline-block; margin: .6rem auto 0; padding: .15rem;",
+      "  color: inherit; font: inherit; font-size: .75rem; opacity: .65;",
+      "  text-decoration: underline; text-underline-offset: .15rem;",
+      "}",
+      "#ak-analytics-preferences:hover { opacity: 1; }",
+      "#ak-analytics-details .ak-disclosure {",
+      "  margin: .7rem 0 0; color: var(--muted, #777); font-size: .78rem;",
       "}"
     ].join("\n");
     document.head.appendChild(css);
@@ -193,11 +196,6 @@
       "people explore, so I can improve and share the journal. " +
       "You can accept, reject or manage optional uses.";
     panel.appendChild(description);
-
-    const detailsLink = document.createElement("a");
-    detailsLink.href = "/about/";
-    detailsLink.textContent = "Privacy details";
-    panel.appendChild(detailsLink);
 
     const actions = document.createElement("div");
     actions.id = "ak-analytics-actions";
@@ -262,6 +260,24 @@
       false
     );
 
+    const disclosure = document.createElement("p");
+    disclosure.className = "ak-disclosure";
+    disclosure.textContent =
+      "If you accept audience analytics, Google may use analytics cookies " +
+      "and process standard technical information such as browser details and " +
+      "approximate location. I do not intentionally send names, email addresses " +
+      "or form contents. Previous analytics data is not automatically deleted " +
+      "if you later withdraw permission. Your choice is remembered in this " +
+      "browser for 180 days.";
+    details.appendChild(disclosure);
+
+    const googlePrivacy = document.createElement("a");
+    googlePrivacy.href = "https://policies.google.com/privacy";
+    googlePrivacy.target = "_blank";
+    googlePrivacy.rel = "noopener noreferrer";
+    googlePrivacy.textContent = "Google privacy policy";
+    details.appendChild(googlePrivacy);
+
     const save = document.createElement("button");
     save.type = "button";
     save.id = "ak-analytics-save";
@@ -306,12 +322,15 @@
     panel.hidden = preference() !== null;
 
     if (footer) {
-      const preferences = document.createElement("button");
+      // A low-profile footer link is available for withdrawal at any time,
+      // without leaving a permanent consent button on the photo journal.
+      const preferences = document.createElement("a");
       preferences.id = "ak-analytics-preferences";
-      preferences.type = "button";
-      preferences.textContent = "Privacy choices";
+      preferences.href = "#privacy-choices";
+      preferences.textContent = "Privacy";
       footer.appendChild(preferences);
-      preferences.addEventListener("click", function () {
+      preferences.addEventListener("click", function (event) {
+        event.preventDefault();
         panel.hidden = false;
         showPreferences();
       });
