@@ -1017,35 +1017,6 @@ def scan_repo(
 # -----------------------------
 # Rendering helpers
 # -----------------------------
-# --- Per-photo journal captions (captions.json) ---
-def load_album_captions(album_dir: Path, image_count: int) -> Dict[int, str]:
-    """Return 1-based captions; reject malformed files rather than silently hide text."""
-    path = album_dir / "captions.json"
-    if not path.exists():
-        return {}
-
-    try:
-        data = json.loads(path.read_text(encoding="utf-8-sig"))
-    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
-        raise ValueError(f"Invalid captions file {path}: {exc}") from exc
-
-    if not isinstance(data, dict):
-        raise ValueError(f"{path}: expected a JSON object keyed by image number")
-
-    expected = {str(n) for n in range(1, image_count + 1)}
-    if set(data) != expected:
-        missing = sorted(expected - set(data), key=int)
-        extra = sorted(set(data) - expected)
-        raise ValueError(f"{path}: missing caption keys {missing}; unexpected keys {extra}")
-
-    captions: Dict[int, str] = {}
-    for number in range(1, image_count + 1):
-        value = data[str(number)]
-        if not isinstance(value, str) or not value.strip():
-            raise ValueError(f"{path}: caption {number} must be a non-empty string")
-        captions[number] = value.strip()
-    return captions
-# --- End per-photo journal captions ---
 
 
 def make_environment(root: Path) -> Environment:
@@ -1252,7 +1223,6 @@ def render_all(
 
         outputs[root / album.rel_dir / "index.html"] = album_template.render(
             album=album,
-            captions=load_album_captions(root / album.rel_dir, album.image_count),
             image_alts=load_image_alts(root / album.rel_dir, album.image_count),
             image_captions=load_image_captions(root / album.rel_dir, album.image_count),
             month_title=album_month_title,
