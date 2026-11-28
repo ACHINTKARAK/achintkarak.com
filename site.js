@@ -440,7 +440,11 @@
     let index = 0;
     let loading = false;
     let sourceFocus = null;
-    let touchStart = null;
+    let gesture = null;
+    let zoom = 1;
+    let panX = 0;
+    let panY = 0;
+    let scrollBeforeOpen = null;
 
     const dialog = create("dialog", "ak-gallery");
     dialog.setAttribute("aria-label", "Photograph gallery");
@@ -481,6 +485,47 @@
     dialog.append(layout);
     document.body.append(dialog);
 
+    // Scale only the photograph and constrain panning to its visible bounds.
+    function applyZoom(scale, x, y) {
+      zoom = Math.max(1, Math.min(4, scale));
+      const ratio = enlarged.naturalWidth && enlarged.naturalHeight
+        ? Math.min(enlarged.clientWidth / enlarged.naturalWidth, enlarged.clientHeight / enlarged.naturalHeight)
+        : 0;
+      const maxX = Math.max(0, (enlarged.naturalWidth * ratio * zoom - stage.clientWidth) / 2);
+      const maxY = Math.max(0, (enlarged.naturalHeight * ratio * zoom - stage.clientHeight) / 2);
+      panX = zoom === 1 ? 0 : Math.max(-maxX, Math.min(maxX, x));
+      panY = zoom === 1 ? 0 : Math.max(-maxY, Math.min(maxY, y));
+      enlarged.style.transform = zoom === 1 ? "" :
+        "translate(" + panX + "px, " + panY + "px) scale(" + zoom + ")";
+      stage.classList.toggle("is-zoomed", zoom > 1);
+    }
+
+    function resetZoom() {
+      gesture = null;
+      applyZoom(1, 0, 0);
+    }
+
+    function pinchGeometry(touches) {
+      const first = touches[0], second = touches[1];
+      const bounds = stage.getBoundingClientRect();
+      return {
+        distance: Math.max(1, Math.hypot(first.clientX - second.clientX, first.clientY - second.clientY)),
+        x: (first.clientX + second.clientX) / 2 - bounds.left - bounds.width / 2,
+        y: (first.clientY + second.clientY) / 2 - bounds.top - bounds.height / 2
+      };
+    }
+
+    function beginPinch(touches) {
+      const point = pinchGeometry(touches);
+      gesture = { kind: "pinch", distance: point.distance, x: point.x, y: point.y,
+        scale: zoom, panX, panY };
+    }
+
+    function beginSingleTouch(touch, allowSwipe) {
+      gesture = { kind: zoom > 1 ? "pan" : allowSwipe ? "swipe" : "ignore",
+        x: touch.clientX, y: touch.clientY, panX, panY };
+    }
+
     function preloadNeighbor(photoIndex) {
       if (photoIndex < 0 || photoIndex >= activeAlbum.images.length) return;
       const preload = new Image();
@@ -489,6 +534,7 @@
 
     function updateView(photoIndex) {
       if (photoIndex < 0 || photoIndex >= activeAlbum.images.length) return;
+      resetZoom();
       index = photoIndex;
       const photo = activeAlbum.images[index];
       enlarged.src = photo.url;
@@ -548,11 +594,12 @@
     function open(indexToOpen) {
       if (dialog.open) return;
       activeAlbum = originalAlbum;
-      sourceFocus = document.activeElement;
+      sourceFocus = sourcePhotos[indexToOpen];
+      scrollBeforeOpen = { x: window.scrollX, y: window.scrollY };
       updateView(indexToOpen);
       dialog.showModal();
       document.body.classList.add("ak-gallery-open");
-      close.focus();
+      close.focus({ preventScroll: true });
     }
 
     sourcePhotos.forEach(function (photo, photoIndex) {
@@ -586,8 +633,13 @@
     close.addEventListener("click", function () { dialog.close(); });
     dialog.addEventListener("close", function () {
       document.body.classList.remove("ak-gallery-open");
+      resetZoom();
       if (sourceFocus && typeof sourceFocus.focus === "function") {
         sourceFocus.focus({ preventScroll: true });
+      }
+      if (scrollBeforeOpen) {
+        window.scrollTo({ left: scrollBeforeOpen.x, top: scrollBeforeOpen.y, behavior: "instant" });
+        scrollBeforeOpen = null;
       }
     });
     dialog.addEventListener("keydown", function (event) {
@@ -602,21 +654,55 @@
     });
 
     stage.addEventListener("touchstart", function (event) {
-      if (event.touches.length !== 1) {
-        touchStart = null;
+      if (loading || event.target.closest("button")) return;
+      if (event.touches.length >= 2) beginPinch(event.touches);
+      else if (event.touches.length === 1) beginSingleTouch(event.touches[0], true);
+    }, { passive: true });
+
+    stage.addEventListener("touchmove", function (event) {
+      if (!gesture || loading) return;
+      if (event.cancelable) event.preventDefault();
+      if (event.touches.length >= 2) {
+        if (gesture.kind !== "pinch") beginPinch(event.touches);
+        const point = pinchGeometry(event.touches);
+        const scale = Math.max(1, Math.min(4, gesture.scale * point.distance / gesture.distance));
+        const factor = scale / gesture.scale;
+        applyZoom(scale, point.x - (gesture.x - gesture.panX) * factor,
+          point.y - (gesture.y - gesture.panY) * factor);
+      } else if (event.touches.length === 1 && gesture.kind === "pan") {
+        const touch = event.touches[0];
+        applyZoom(zoom, gesture.panX + touch.clientX - gesture.x,
+          gesture.panY + touch.clientY - gesture.y);
+      }
+    }, { passive: false });
+
+    stage.addEventListener("touchend", function (event) {
+      if (!gesture || loading) return;
+      if (event.touches.length >= 2) {
+        beginPinch(event.touches);
         return;
       }
-      touchStart = { x: event.touches[0].clientX, y: event.touches[0].clientY };
-    }, { passive: true });
-    stage.addEventListener("touchend", function (event) {
-      if (!touchStart || event.changedTouches.length !== 1 || loading) return;
-      const dx = event.changedTouches[0].clientX - touchStart.x;
-      const dy = event.changedTouches[0].clientY - touchStart.y;
-      touchStart = null;
+      if (event.touches.length === 1) {
+        // After a pinch, the remaining finger must never change photographs.
+        beginSingleTouch(event.touches[0], false);
+        return;
+      }
+      const previous = gesture;
+      gesture = null;
+      if (previous.kind !== "swipe" || zoom !== 1 || event.changedTouches.length !== 1) return;
+      const dx = event.changedTouches[0].clientX - previous.x;
+      const dy = event.changedTouches[0].clientY - previous.y;
       if (Math.abs(dx) < 55 || Math.abs(dx) < Math.abs(dy) * 1.3) return;
       updateView(index + (dx < 0 ? 1 : -1));
     }, { passive: true });
-    stage.addEventListener("touchcancel", function () { touchStart = null; });
+
+    stage.addEventListener("touchcancel", function () { gesture = null; });
+    window.addEventListener("resize", function () {
+      if (dialog.open) {
+        gesture = null;
+        applyZoom(zoom, panX, panY);
+      }
+    });
   }
 
   function initializePage() {
