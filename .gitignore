@@ -21,3 +21,13 @@ styles.css.[0-9]*
 website-files.old.legacy/
 cleanup-audit.txt
 cleanup-verification.txt
+
+# Additional editor scratch and dated snapshots (keep them outside Git)
+*.bak
+*.orig
+*.rej
+*.tmp
+*~
+tools/build.py.[0-9]*
+tools/templates/*.20??????.html
+tools/templates/*.html.20??????
