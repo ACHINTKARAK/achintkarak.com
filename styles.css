@@ -762,13 +762,13 @@ body.ak-gallery-open {
   padding: 0;
   overflow: hidden;
   border: 0;
-  background: #101011;
+  background: transparent;
   color: rgba(255,255,255,.92);
   font-family: var(--font);
 }
 
 .ak-gallery::backdrop {
-  background: rgba(0,0,0,.92);
+  background: rgba(0,0,0,.72);
 }
 
 .ak-gallery [hidden] {
@@ -862,7 +862,8 @@ body.ak-gallery-open {
   flex: 1 1 0;
   min-height: 0;
   padding: 0 48px;
-  touch-action: pan-y;
+  touch-action: none;
+  overflow: hidden;
 }
 
 .ak-gallery__image {
@@ -872,6 +873,17 @@ body.ak-gallery-open {
   object-fit: contain;
   user-select: none;
   -webkit-user-drag: none;
+  transform-origin: center;
+}
+
+.ak-gallery__stage.is-zoomed .ak-gallery__previous,
+.ak-gallery__stage.is-zoomed .ak-gallery__following {
+  visibility: hidden;
+}
+
+.ak-gallery__header,
+.ak-gallery__footer {
+  text-shadow: 0 1px 5px rgba(0,0,0,.95);
 }
 
 .ak-gallery__footer {
@@ -932,11 +944,6 @@ body.ak-gallery-open {
 
   .ak-gallery__stage {
     padding: 0 2px;
-  }
-
-  .ak-gallery__previous,
-  .ak-gallery__following {
-    background: rgba(16,16,17,.55);
   }
 
   .ak-gallery__caption {
@@ -1049,4 +1056,28 @@ body.ak-gallery-open {
     .ak-gallery__header {
         min-height: 56px;
     }
+}
+/* Subtle mobile chevrons retain their 44px touch targets. */
+@media (max-width: 600px), (hover: none) and (pointer: coarse) {
+  .ak-gallery__previous,
+  .ak-gallery__following,
+  .ak-gallery__previous:hover,
+  .ak-gallery__following:hover {
+    background: transparent;
+    font-size: 0;
+    color: rgba(255,255,255,.76);
+  }
+
+  .ak-gallery__previous::before,
+  .ak-gallery__following::before {
+    content: "";
+    width: 10px;
+    height: 10px;
+    border-top: 1.5px solid currentColor;
+    border-right: 1.5px solid currentColor;
+    filter: drop-shadow(0 1px 2px #000) drop-shadow(0 0 3px #000);
+  }
+
+  .ak-gallery__previous::before { transform: rotate(-135deg); }
+  .ak-gallery__following::before { transform: rotate(45deg); }
 }
