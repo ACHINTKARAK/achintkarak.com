@@ -345,9 +345,284 @@
     }
   }
 
+  // ---------- Optional full-screen album gallery ----------
+  function initializeAlbumGallery() {
+    const sourcePhotos = Array.from(document.querySelectorAll("figure.frame > img"));
+    if (
+      sourcePhotos.length === 0 ||
+      typeof HTMLDialogElement === "undefined" ||
+      typeof HTMLDialogElement.prototype.showModal !== "function"
+    ) {
+      return;
+    }
+
+    function create(tag, className, label) {
+      const node = document.createElement(tag);
+      if (className) node.className = className;
+      if (label !== undefined) node.textContent = label;
+      return node;
+    }
+
+    function getAlbumLink(anchor, baseUrl) {
+      if (!anchor || !anchor.matches("a[href]")) return null;
+      const href = new URL(anchor.getAttribute("href"), baseUrl);
+      if (href.origin !== window.location.origin) return null;
+      const fullName = anchor.querySelector(".album-name-full");
+      const name = (fullName?.textContent || anchor.textContent || "")
+        .replace(/^\s*←\s*/, "")
+        .replace(/\s*→\s*$/, "")
+        .trim();
+      return { url: href.href, name: name || "Album" };
+    }
+
+    function shortAlbumName(name) {
+      const firstPart = name.split(",")[0].trim();
+      if (firstPart === "Kilkee and Lahinch") return "Kilkee";
+      if (firstPart === "Westcork") return "West Cork";
+      return firstPart;
+    }
+
+    function setAlbumButton(anchor, destination, isPrevious) {
+      anchor.href = destination.url;
+      const full = create(
+        "span",
+        "ak-gallery__album-label-full",
+        isPrevious
+          ? "← Previous album · " + destination.name
+          : "Next album · " + destination.name + " →"
+      );
+      const compact = create(
+        "span",
+        "ak-gallery__album-label-short",
+        (isPrevious ? "← " : "") + shortAlbumName(destination.name) +
+          (isPrevious ? "" : " →")
+      );
+      anchor.replaceChildren(full, compact);
+    }
+
+    function parseAlbum(doc, albumUrl) {
+      const frames = Array.from(doc.querySelectorAll("figure.frame"));
+      if (frames.length !== 7) {
+        throw new Error("Expected seven photographs in the selected album.");
+      }
+      const images = frames.map(function (frame) {
+        const photo = frame.querySelector("img[src]");
+        if (!photo) throw new Error("Album photograph is missing.");
+        return {
+          url: new URL(photo.getAttribute("src"), albumUrl).href,
+          alt: photo.getAttribute("alt") || "",
+          caption: frame.querySelector("figcaption")?.textContent.trim() || ""
+        };
+      });
+      const name = doc.querySelector(".meta .place")?.textContent.trim();
+      if (!name) throw new Error("Album title could not be found.");
+      const nav = doc.querySelector('nav[aria-label="Album navigation"]');
+      const items = Array.from(nav?.children || []);
+      return {
+        name,
+        images,
+        previous: getAlbumLink(items[0], albumUrl),
+        next: getAlbumLink(items[items.length - 1], albumUrl)
+      };
+    }
+
+    const originUrl = window.location.href;
+    let originalAlbum;
+    try {
+      originalAlbum = parseAlbum(document, originUrl);
+    } catch (error) {
+      console.warn("Gallery unavailable for this album.", error);
+      return;
+    }
+
+    const albumCache = new Map([[originUrl, originalAlbum]]);
+    let activeAlbum = originalAlbum;
+    let index = 0;
+    let loading = false;
+    let sourceFocus = null;
+    let touchStart = null;
+
+    const dialog = create("dialog", "ak-gallery");
+    dialog.setAttribute("aria-label", "Photograph gallery");
+    const layout = create("div", "ak-gallery__layout");
+    const header = create("div", "ak-gallery__header");
+    const title = create("span", "ak-gallery__title", activeAlbum.name);
+    title.setAttribute("aria-live", "polite");
+    const close = create("button", "ak-gallery__close", "×");
+    close.type = "button";
+    close.setAttribute("aria-label", "Close gallery");
+    header.append(title, close);
+
+    const stage = create("div", "ak-gallery__stage");
+    const enlarged = create("img", "ak-gallery__image");
+    enlarged.alt = "";
+    enlarged.draggable = false;
+    const previousPhoto = create("button", "ak-gallery__previous", "‹");
+    previousPhoto.type = "button";
+    previousPhoto.setAttribute("aria-label", "Previous photograph");
+    const nextPhoto = create("button", "ak-gallery__following", "›");
+    nextPhoto.type = "button";
+    nextPhoto.setAttribute("aria-label", "Next photograph");
+    stage.append(enlarged, previousPhoto, nextPhoto);
+
+    const footer = create("div", "ak-gallery__footer");
+    const caption = create("p", "ak-gallery__caption");
+    const counter = create("span", "ak-gallery__count");
+    const albumLinks = create("nav", "ak-gallery__album-links");
+    albumLinks.setAttribute("aria-label", "Continue to another album");
+    const previousAlbum = create("a", "ak-gallery__onward ak-gallery__go-back");
+    const nextAlbum = create("a", "ak-gallery__onward ak-gallery__go-next");
+    albumLinks.append(previousAlbum, nextAlbum);
+    const status = create("p", "ak-gallery__status");
+    status.setAttribute("role", "status");
+    status.hidden = true;
+    footer.append(caption, counter, albumLinks, status);
+    layout.append(header, stage, footer);
+    dialog.append(layout);
+    document.body.append(dialog);
+
+    function preloadNeighbor(photoIndex) {
+      if (photoIndex < 0 || photoIndex >= activeAlbum.images.length) return;
+      const preload = new Image();
+      preload.src = activeAlbum.images[photoIndex].url;
+    }
+
+    function updateView(photoIndex) {
+      if (photoIndex < 0 || photoIndex >= activeAlbum.images.length) return;
+      index = photoIndex;
+      const photo = activeAlbum.images[index];
+      enlarged.src = photo.url;
+      enlarged.alt = photo.alt || (activeAlbum.name + ", photograph " + (index + 1));
+      title.textContent = activeAlbum.name;
+      caption.textContent = photo.caption;
+      caption.hidden = !photo.caption;
+      counter.textContent = (index + 1) + " / " + activeAlbum.images.length;
+      previousPhoto.hidden = index === 0;
+      nextPhoto.hidden = index === activeAlbum.images.length - 1;
+
+      const atEnd = index === activeAlbum.images.length - 1;
+      const back = activeAlbum.previous;
+      const forward = activeAlbum.next;
+      albumLinks.hidden = !atEnd || (!back && !forward);
+      previousAlbum.hidden = !atEnd || !back;
+      nextAlbum.hidden = !atEnd || !forward;
+      if (back) {
+        setAlbumButton(previousAlbum, back, true);
+      }
+      if (forward) {
+        setAlbumButton(nextAlbum, forward, false);
+      }
+      status.hidden = true;
+      preloadNeighbor(index + 1);
+    }
+
+    async function changeAlbum(destination) {
+      if (!destination || loading) return;
+      loading = true;
+      layout.setAttribute("aria-busy", "true");
+      status.textContent = "Opening " + destination.name + "…";
+      status.hidden = false;
+      try {
+        let album = albumCache.get(destination.url);
+        if (!album) {
+          const response = await fetch(destination.url, { credentials: "same-origin" });
+          if (!response.ok) throw new Error("HTTP " + response.status);
+          const html = await response.text();
+          const doc = new DOMParser().parseFromString(html, "text/html");
+          album = parseAlbum(doc, response.url || destination.url);
+          albumCache.set(destination.url, album);
+        }
+        activeAlbum = album;
+        updateView(0);
+        close.focus();
+      } catch (error) {
+        console.warn("Could not open gallery album:", destination.url, error);
+        status.textContent = "Couldn't load the album. Please try again.";
+        status.hidden = false;
+      } finally {
+        loading = false;
+        layout.removeAttribute("aria-busy");
+      }
+    }
+
+    function open(indexToOpen) {
+      if (dialog.open) return;
+      activeAlbum = originalAlbum;
+      sourceFocus = document.activeElement;
+      updateView(indexToOpen);
+      dialog.showModal();
+      document.body.classList.add("ak-gallery-open");
+      close.focus();
+    }
+
+    sourcePhotos.forEach(function (photo, photoIndex) {
+      photo.setAttribute("role", "button");
+      photo.tabIndex = 0;
+      photo.setAttribute("data-ak-gallery-photo", "");
+      photo.setAttribute(
+        "aria-label",
+        "Open photograph " + (photoIndex + 1) + " of " + sourcePhotos.length +
+          (photo.alt ? ": " + photo.alt : "")
+      );
+      photo.addEventListener("click", function () { open(photoIndex); });
+      photo.addEventListener("keydown", function (event) {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          open(photoIndex);
+        }
+      });
+    });
+
+    previousAlbum.addEventListener("click", function (event) {
+      event.preventDefault();
+      changeAlbum(activeAlbum.previous);
+    });
+    nextAlbum.addEventListener("click", function (event) {
+      event.preventDefault();
+      changeAlbum(activeAlbum.next);
+    });
+    previousPhoto.addEventListener("click", function () { updateView(index - 1); });
+    nextPhoto.addEventListener("click", function () { updateView(index + 1); });
+    close.addEventListener("click", function () { dialog.close(); });
+    dialog.addEventListener("close", function () {
+      document.body.classList.remove("ak-gallery-open");
+      if (sourceFocus && typeof sourceFocus.focus === "function") {
+        sourceFocus.focus({ preventScroll: true });
+      }
+    });
+    dialog.addEventListener("keydown", function (event) {
+      if (loading) return;
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        updateView(index - 1);
+      } else if (event.key === "ArrowRight") {
+        event.preventDefault();
+        updateView(index + 1);
+      }
+    });
+
+    stage.addEventListener("touchstart", function (event) {
+      if (event.touches.length !== 1) {
+        touchStart = null;
+        return;
+      }
+      touchStart = { x: event.touches[0].clientX, y: event.touches[0].clientY };
+    }, { passive: true });
+    stage.addEventListener("touchend", function (event) {
+      if (!touchStart || event.changedTouches.length !== 1 || loading) return;
+      const dx = event.changedTouches[0].clientX - touchStart.x;
+      const dy = event.changedTouches[0].clientY - touchStart.y;
+      touchStart = null;
+      if (Math.abs(dx) < 55 || Math.abs(dx) < Math.abs(dy) * 1.3) return;
+      updateView(index + (dx < 0 ? 1 : -1));
+    }, { passive: true });
+    stage.addEventListener("touchcancel", function () { touchStart = null; });
+  }
+
   function initializePage() {
     initializeThemeControls();
     initializeDiscoveryImage();
+    initializeAlbumGallery();
   }
 
   applyTheme(readTheme());
